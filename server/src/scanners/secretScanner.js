@@ -4,6 +4,7 @@ const {
   readFileSafe,
   redactSecret,
   isLikelyTestOrPlaceholder,
+  isInsideComment,
   getLineAndSnippet,
 } = require('./scannerUtils');
 
@@ -87,6 +88,7 @@ async function scanForSecrets(projectPath) {
     const awsRegex = /(?:^|[^A-Z0-9])(AKIA[0-9A-Z]{16})(?:[^A-Z0-9]|$)/g;
     let match;
     while ((match = awsRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const fullMatch = match[1];
       if (isLikelyTestOrPlaceholder(fullMatch)) continue;
 
@@ -116,6 +118,7 @@ async function scanForSecrets(projectPath) {
     // 2. Private Key Pattern (RSA, DSA, EC, OPENSSH)
     const privateKeyRegex = /-----BEGIN\s+(?:RSA|DSA|EC|OPENSSH|PGP)?\s*PRIVATE\s+KEY-----/g;
     while ((match = privateKeyRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
       findings.push({
         category: 'secrets',
@@ -142,6 +145,7 @@ async function scanForSecrets(projectPath) {
     // 3. Database URI with credentials
     const dbUriRegex = /(mongodb(?:\+srv)?|postgres(?:ql)?|mysql|redis|mariadb):\/\/([^:\s'"/]+):([^@\s'"/]+)@([^\s/'"]+)/gi;
     while ((match = dbUriRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const scheme = match[1];
       const username = match[2];
       const password = match[3];
@@ -177,6 +181,7 @@ async function scanForSecrets(projectPath) {
     // 4. JWT Secret assignment or inline usage
     const jwtSecretRegex = /(?:jwt_secret|jwtSecret|JWT_SECRET)\s*[:=]\s*['"`]([^'"`\r\n]{4,})['"`]/gi;
     while ((match = jwtSecretRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const secret = match[1];
       if (isLikelyTestOrPlaceholder(secret)) continue;
 
@@ -206,6 +211,7 @@ async function scanForSecrets(projectPath) {
     // 5. Generic API Keys & Tokens
     const apiKeyRegex = /(?:api_key|apiKey|api-key|secret_key|secretKey|access_token|auth_token)\s*[:=]\s*['"`]([A-Za-z0-9_\-]{8,})['"`]/gi;
     while ((match = apiKeyRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const token = match[1];
       if (isLikelyTestOrPlaceholder(token)) continue;
 
@@ -232,6 +238,7 @@ async function scanForSecrets(projectPath) {
     // 6. Hardcoded password assignment
     const passwordRegex = /(?:password|passwd|db_pass|db_password|dbPassword)\s*[:=]\s*['"`]([^'"`\r\n]{4,})['"`]/gi;
     while ((match = passwordRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const pass = match[1];
       if (isLikelyTestOrPlaceholder(pass)) continue;
       // Skip common schema definitions or CSS/HTML attributes

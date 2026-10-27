@@ -123,4 +123,26 @@ describe('PatchPilot Security Scanners Suite', () => {
       expect(validateUpload({ originalname: 'code.zip', size: 1024, mimetype: 'application/zip' }).isValid).toBe(true);
     });
   });
+
+  describe('Comment Filtering & Accuracy', () => {
+    const { isInsideComment } = require('../src/scanners/scannerUtils');
+
+    it('should identify code inside single-line comments', () => {
+      const code = 'const x = 1;\n// eval(untrusted);\nconst y = 2;';
+      const evalIndex = code.indexOf('eval');
+      expect(isInsideComment(code, evalIndex)).toBe(true);
+    });
+
+    it('should identify code inside multi-line block comments and JSDoc', () => {
+      const jsdoc = '/**\n * Example:\n * res.cookie("token", "val");\n */\napp.use();';
+      const cookieIndex = jsdoc.indexOf('res.cookie');
+      expect(isInsideComment(jsdoc, cookieIndex)).toBe(true);
+    });
+
+    it('should not flag legitimate code as inside a comment', () => {
+      const code = 'const result = eval(userInput);\n// safe comment';
+      const evalIndex = code.indexOf('eval');
+      expect(isInsideComment(code, evalIndex)).toBe(false);
+    });
+  });
 });

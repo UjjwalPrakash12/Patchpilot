@@ -17,6 +17,21 @@ const IGNORED_DIRS = new Set([
   'vendor',
   '.idea',
   '.vscode',
+  'test',
+  'tests',
+  '__tests__',
+  'spec',
+  'specs',
+  'fixtures',
+  '__mocks__',
+  'mock',
+  'mocks',
+  'benchmark',
+  'benchmarks',
+  'docs',
+  'documentation',
+  'example',
+  'examples',
 ]);
 
 const BINARY_EXTENSIONS = new Set([
@@ -176,11 +191,40 @@ function getLineAndSnippet(content, matchIndex, matchLength = 0) {
   };
 }
 
+/**
+ * Determines whether a given character index in source code falls within a single-line or multi-line comment
+ * @param {string} content
+ * @param {number} matchIndex
+ * @returns {boolean}
+ */
+function isInsideComment(content, matchIndex) {
+  if (!content || matchIndex < 0) return false;
+
+  // Check if line before match has //
+  const lineStart = content.lastIndexOf('\n', matchIndex - 1) + 1;
+  const lineBeforeMatch = content.slice(lineStart, matchIndex);
+  if (lineBeforeMatch.includes('//')) {
+    return true;
+  }
+
+  // Check if inside /* ... */ block comment
+  const lastBlockCommentStart = content.lastIndexOf('/*', matchIndex);
+  if (lastBlockCommentStart !== -1) {
+    const lastBlockCommentEnd = content.lastIndexOf('*/', matchIndex);
+    if (lastBlockCommentEnd < lastBlockCommentStart) {
+      return true; // Match is between an opened /* and unclosed */
+    }
+  }
+
+  return false;
+}
+
 module.exports = {
   getProjectFiles,
   readFileSafe,
   redactSecret,
   isLikelyTestOrPlaceholder,
+  isInsideComment,
   getLineAndSnippet,
   IGNORED_DIRS,
 };

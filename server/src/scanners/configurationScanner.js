@@ -4,6 +4,7 @@ const {
   getProjectFiles,
   readFileSafe,
   getLineAndSnippet,
+  isInsideComment,
 } = require('./scannerUtils');
 
 /**
@@ -107,7 +108,9 @@ async function scanConfiguration(projectPath) {
     const corsWildcardRegex = /cors\(\s*\{\s*origin\s*:\s*['"`]\*['"`]|cors\(\s*\)|res\.header\s*\(\s*['"`]Access-Control-Allow-Origin['"`]\s*,\s*['"`]\*['"`]\)|res\.setHeader\s*\(\s*['"`]Access-Control-Allow-Origin['"`]\s*,\s*['"`]\*['"`]\)/g;
     let match;
     while ((match = corsWildcardRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+      const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
       findings.push({
         category: 'configuration',
         title: 'Permissive CORS Configuration (Wildcard Origin "*")',
@@ -118,7 +121,7 @@ async function scanConfiguration(projectPath) {
         filePath: relativePath,
         startLine,
         endLine,
-        evidence: match[0],
+        evidence: lineEvidence,
         description: 'CORS is configured to accept requests from any origin ("*") or default open configuration.',
         impact: 'Allows any malicious third-party site to make authenticated cross-origin requests, potentially stealing private user data.',
         remediation: 'Specify explicit, trusted origins in the CORS configuration (e.g., origin: ["https://app.example.com"]).',
@@ -133,12 +136,14 @@ async function scanConfiguration(projectPath) {
     // 3. Cookies without Secure / HttpOnly flags
     const cookieRegex = /res\.cookie\s*\(\s*['"`][^'"`]+['"`]\s*,\s*[^,)]+(?:,\s*(\{[^}]*\}))?\)/g;
     while ((match = cookieRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const options = match[1] || '';
       const hasHttpOnly = /httpOnly\s*:\s*true/i.test(options);
       const hasSecure = /secure\s*:\s*true|secure\s*:\s*process\.env/i.test(options);
 
       if (!hasHttpOnly || !hasSecure) {
         const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+        const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
         findings.push({
           category: 'configuration',
           title: 'Cookie Set Without Recommended Security Flags (HttpOnly / Secure)',
@@ -149,7 +154,7 @@ async function scanConfiguration(projectPath) {
           filePath: relativePath,
           startLine,
           endLine,
-          evidence: match[0],
+          evidence: lineEvidence,
           description: `Cookie options are missing ${!hasHttpOnly ? 'httpOnly' : ''} ${!hasSecure ? 'secure' : ''} flags.`,
           impact: 'Without HttpOnly, cookies are accessible to client-side scripts (vulnerable to XSS theft). Without Secure, cookies can be transmitted over plain HTTP.',
           remediation: 'Configure cookie options with: { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" }',
@@ -164,8 +169,10 @@ async function scanConfiguration(projectPath) {
     // 4. Session secrets hardcoded
     const sessionSecretRegex = /session\s*\(\s*\{[^}]*secret\s*:\s*['"`]([^'"`\r\n]{4,})['"`]/gi;
     while ((match = sessionSecretRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const secret = match[1];
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+      const lineEvidence = (content.split('\n')[startLine - 1] || `secret: '${secret.slice(0, 3)}****'`).trim();
       findings.push({
         category: 'configuration',
         title: 'Hardcoded Express Session Secret',
@@ -176,7 +183,7 @@ async function scanConfiguration(projectPath) {
         filePath: relativePath,
         startLine,
         endLine,
-        evidence: `secret: '${secret.slice(0, 3)}****'`,
+        evidence: lineEvidence.replace(secret, `${secret.slice(0, 3)}****`),
         description: 'Express session middleware is configured with a hardcoded secret string.',
         impact: 'Attackers can forge or tamper with session cookies to hijack active user accounts.',
         remediation: 'Store session secret in an environment variable (e.g. process.env.SESSION_SECRET).',
@@ -190,9 +197,11 @@ async function scanConfiguration(projectPath) {
     // 5. Debug mode enabled in production configs
     const debugModeRegex = /(?:debug\s*:\s*true|DEBUG\s*=\s*['"]?true['"]?)/gi;
     while ((match = debugModeRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const isConfigFile = /(?:config|setting|env|default)/i.test(relativePath);
       if (isConfigFile) {
         const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+        const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
         findings.push({
           category: 'configuration',
           title: 'Debug Mode Enabled in Application Configuration',
@@ -203,7 +212,7 @@ async function scanConfiguration(projectPath) {
           filePath: relativePath,
           startLine,
           endLine,
-          evidence: match[0],
+          evidence: lineEvidence,
           description: 'Debug flag is statically enabled in configuration file.',
           impact: 'Debug mode can expose internal system state, memory dumps, query execution details, and verbose stack traces to attackers.',
           remediation: 'Ensure debug flags are strictly disabled in production or conditionally toggled via environment variables.',
@@ -216,7 +225,9 @@ async function scanConfiguration(projectPath) {
     // 6. Exposed stack traces in error handler
     const stackTraceRegex = /res\.(?:status\(500\)|json|send)\s*\(\s*\{[^}]*stack\s*:\s*err(?:or)?\.stack/gi;
     while ((match = stackTraceRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+      const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
       findings.push({
         category: 'configuration',
         title: 'Unconditional Error Stack Trace Leak',
@@ -227,7 +238,7 @@ async function scanConfiguration(projectPath) {
         filePath: relativePath,
         startLine,
         endLine,
-        evidence: match[0],
+        evidence: lineEvidence,
         description: 'Error handler exposes raw stack traces in HTTP responses without checking environment.',
         impact: 'Internal file paths, database schemas, and stack traces reveal implementation details that facilitate targeted exploits.',
         remediation: 'Only return stack traces when process.env.NODE_ENV !== "production".',
@@ -239,7 +250,9 @@ async function scanConfiguration(projectPath) {
     // 7. Unauthenticated MongoDB connection string in production config
     const mongoNoAuthRegex = /mongodb:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?\/[a-zA-Z0-9_\-]+/gi;
     while ((match = mongoNoAuthRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+      const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
       findings.push({
         category: 'configuration',
         title: 'Unauthenticated Local MongoDB Connection String',
@@ -250,7 +263,7 @@ async function scanConfiguration(projectPath) {
         filePath: relativePath,
         startLine,
         endLine,
-        evidence: match[0],
+        evidence: lineEvidence,
         description: 'MongoDB connection string lacks authentication credentials or TLS settings.',
         impact: 'If deployed without network isolation, unauthenticated databases are susceptible to ransomware and unauthorized data dumps.',
         remediation: 'Configure authentication and TLS/SSL in MongoDB connection strings via environment variables.',
@@ -262,7 +275,9 @@ async function scanConfiguration(projectPath) {
     // 8. Permissive file upload configuration (multer without limits)
     const multerNoLimitsRegex = /multer\s*\(\s*(?:\{\s*\}|\(\s*\))?\s*\)/g;
     while ((match = multerNoLimitsRegex.exec(content)) !== null) {
+      if (isInsideComment(content, match.index)) continue;
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
+      const lineEvidence = (content.split('\n')[startLine - 1] || match[0]).trim();
       findings.push({
         category: 'configuration',
         title: 'Permissive File Upload Configuration (Missing Limits / Filter)',
@@ -273,7 +288,7 @@ async function scanConfiguration(projectPath) {
         filePath: relativePath,
         startLine,
         endLine,
-        evidence: match[0],
+        evidence: lineEvidence,
         description: 'Multer middleware initialized without specifying fileSize limits or fileFilter.',
         impact: 'Allows Denial of Service (DoS) through disk exhaustion or upload of malicious executable files.',
         remediation: 'Set limits: { fileSize: 5 * 1024 * 1024 } and validate file types using a fileFilter callback.',
