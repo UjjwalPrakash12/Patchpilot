@@ -9,9 +9,12 @@
     "test": "jest"
   },
   "dependencies": {
+    "@babel/parser": "^7.29.11",
+    "@babel/traverse": "^7.29.10",
     "adm-zip": "^0.5.16",
     "archiver": "^7.0.1",
     "cors": "^2.8.5",
+    "diff": "^9.0.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",

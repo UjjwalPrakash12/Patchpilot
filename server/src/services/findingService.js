@@ -153,7 +153,7 @@ if (!secretValue) {
       explanation = 'Avoid hardcoding secrets or credentials. Store them in environment variables or external secrets vaults (AWS Secrets Manager, HashiCorp Vault).';
       risks = 'Revoke the previously committed key immediately, as git commit history may have exposed it.';
     }
-  } else if (ruleId === 'SA-EVAL-USAGE') {
+  } else if (ruleId === 'SA-EVAL-USAGE' || ruleId === 'PP-SAST-EVAL') {
     fixedCode = `// Safe structured parsing instead of dynamic evaluation:
 // If parsing data, use JSON.parse:
 const parsedData = JSON.parse(userString);
@@ -166,7 +166,7 @@ const operations = {
 const result = operations[operationName]?.(arg1, arg2);`;
     explanation = 'Replace eval() with standard JSON.parse() or a dictionary of approved callable functions.';
     risks = 'JSON.parse() requires valid JSON format (quoted keys). Check input format compatibility.';
-  } else if (ruleId === 'SA-INNERHTML-ASSIGNMENT') {
+  } else if (ruleId === 'SA-INNERHTML-ASSIGNMENT' || ruleId === 'PP-SAST-XSS-DOM') {
     fixedCode = `// Option A: If content is plain text, use textContent (safest):
 element.textContent = userMessage;
 
@@ -175,7 +175,7 @@ import DOMPurify from 'dompurify';
 element.innerHTML = DOMPurify.sanitize(userMarkup);`;
     explanation = 'Use textContent for text. If HTML is required, sanitize using DOMPurify to strip malicious scripts and event handlers.';
     risks = 'DOMPurify removes active script tags and dangerous attributes. Verify required style/layout tags are preserved.';
-  } else if (ruleId === 'SA-DANGEROUSLY-SET-INNERHTML') {
+  } else if (ruleId === 'SA-DANGEROUSLY-SET-INNERHTML' || ruleId === 'PP-SAST-XSS-REACT') {
     fixedCode = `import DOMPurify from 'dompurify';
 
 function SafeHtmlViewer({ htmlContent }) {
@@ -184,7 +184,7 @@ function SafeHtmlViewer({ htmlContent }) {
 }`;
     explanation = 'Sanitize raw HTML using DOMPurify before passing to React dangerouslySetInnerHTML.';
     risks = 'Requires installing dompurify (or isomorphic-dompurify for SSR).';
-  } else if (ruleId === 'SA-COMMAND-INJECTION') {
+  } else if (ruleId === 'SA-COMMAND-INJECTION' || ruleId === 'PP-SAST-CMD-INJECTION') {
     fixedCode = `const { execFile } = require('child_process');
 
 // Pass arguments as a distinct array - NEVER concatenate user input into shell command strings:
@@ -197,12 +197,48 @@ execFile('/usr/bin/git', ['log', '-n', '5'], (err, stdout, stderr) => {
 });`;
     explanation = 'Use child_process.execFile or spawn with argument arrays rather than exec(). This prevents shell metacharacter expansion.';
     risks = 'Shell built-in commands or pipes cannot be invoked directly without explicit stream chaining.';
-  } else if (ruleId === 'SA-SQL-INJECTION' || ruleId === 'SA-SQL-INJECTION-CONCAT') {
+  } else if (ruleId === 'SA-SQL-INJECTION' || ruleId === 'SA-SQL-INJECTION-CONCAT' || ruleId === 'PP-SAST-SQLI') {
     fixedCode = `// Use parameterized queries with bind placeholders:
 const query = 'SELECT id, username, email FROM users WHERE id = ? AND status = ?';
 const result = await db.query(query, [userId, 'active']);`;
     explanation = 'Use parameterized queries or prepared statements. Query parameters are treated strictly as data, never executable SQL.';
     risks = 'None. Parameterization also improves query execution caching.';
+  } else if (ruleId === 'SA-NOSQL-INJECTION' || ruleId === 'PP-SAST-NOSQLI') {
+    fixedCode = `// Force input to primitive string to prevent operator injection ($ne, $gt):
+const sanitizedInput = String(req.body.username || '');
+const user = await User.findOne({ username: sanitizedInput });`;
+    explanation = 'Sanitize or type-cast user inputs to string/number before passing into NoSQL query filters.';
+    risks = 'Ensures MongoDB query filters only accept literal values and rejects injected query operator objects.';
+  } else if (ruleId === 'SA-PATH-TRAVERSAL' || ruleId === 'PP-SAST-PATH-TRAVERSAL') {
+    fixedCode = `const path = require('path');
+const baseDir = path.resolve('/safe/base/directory');
+const targetFile = path.basename(req.params.fileName);
+const resolvedPath = path.resolve(baseDir, targetFile);
+
+if (!resolvedPath.startsWith(baseDir + path.sep)) {
+  return res.status(400).send('Invalid file path');
+}
+res.sendFile(resolvedPath);`;
+    explanation = 'Use path.basename to isolate the file name and verify resolved path starts with the intended base directory.';
+    risks = 'Subdirectories inside the base path will be disallowed unless specifically mapped.';
+  } else if (ruleId === 'SA-SSRF' || ruleId === 'PP-SAST-SSRF') {
+    fixedCode = `// Whitelist allowed target hosts:
+const ALLOWED_HOSTS = new Set(['api.example.com', 'storage.googleapis.com']);
+const parsedUrl = new URL(req.query.targetUrl);
+
+if (parsedUrl.protocol !== 'https:' || !ALLOWED_HOSTS.has(parsedUrl.hostname)) {
+  return res.status(400).send('Disallowed destination host');
+}
+const response = await fetch(parsedUrl.toString());`;
+    explanation = 'Validate protocol and restrict outbound requests to a strict whitelist of approved domain names.';
+    risks = 'Destinations not explicitly listed in the whitelist will be blocked.';
+  } else if (ruleId === 'PP-SAST-OPEN-REDIRECT') {
+    fixedCode = `// Restrict redirect to relative application routes:
+const destination = String(req.query.returnUrl || '/');
+const safeUrl = (destination.startsWith('/') && !destination.startsWith('//')) ? destination : '/';
+res.redirect(safeUrl);`;
+    explanation = 'Ensure redirect URLs start with a single "/" and not "//" or external protocol schemes.';
+    risks = 'External redirects must be explicitly permitted through an allowlist.';
   } else if (ruleId === 'CONF-CORS-WILDCARD') {
     fixedCode = `const cors = require('cors');
 
@@ -246,7 +282,7 @@ const generalLimiter = rateLimit({
 app.use('/api/', generalLimiter);`;
     explanation = 'Add express-rate-limit to mitigate DoS, credential stuffing, and brute force attacks.';
     risks = 'Ensure app.set("trust proxy", 1) is enabled if running behind a reverse proxy (e.g. Nginx, Cloudflare).';
-  } else if (ruleId === 'SA-WEAK-HASH-ALGO') {
+  } else if (ruleId === 'SA-WEAK-HASH-ALGO' || ruleId === 'PP-SAST-WEAK-HASH') {
     fixedCode = `// For Password Hashing (recommended):
 const bcrypt = require('bcrypt');
 const hashedPassword = await bcrypt.hash(plainTextPassword, 12);
@@ -256,7 +292,7 @@ const crypto = require('crypto');
 const checksum = crypto.createHash('sha256').update(fileData).digest('hex');`;
     explanation = 'Use bcrypt or argon2 for passwords, and SHA-256 / SHA-512 for data integrity checks.';
     risks = 'Legacy MD5 hashes in the database will need an automatic upgrade strategy upon next user authentication.';
-  } else if (ruleId === 'SA-INSECURE-RANDOM') {
+  } else if (ruleId === 'SA-INSECURE-RANDOM' || ruleId === 'PP-SAST-INSECURE-RANDOM') {
     fixedCode = `const crypto = require('crypto');
 
 // Generate secure random authentication token:

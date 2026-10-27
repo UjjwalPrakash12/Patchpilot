@@ -45,10 +45,10 @@ describe('PatchPilot Security Scanners Suite', () => {
       expect(findings.length).toBeGreaterThan(0);
 
       const rules = findings.map((f) => f.ruleId);
-      expect(rules).toContain('SA-EVAL-USAGE');
-      expect(rules).toContain('SA-INNERHTML-ASSIGNMENT');
-      expect(rules).toContain('SA-WEAK-HASH-ALGO');
-      expect(rules).toContain('SA-INSECURE-RANDOM');
+      expect(rules).toContain('PP-SAST-EVAL');
+      expect(rules).toContain('PP-SAST-XSS-DOM');
+      expect(rules).toContain('PP-SAST-WEAK-HASH');
+      expect(rules).toContain('PP-SAST-INSECURE-RANDOM');
     });
   });
 

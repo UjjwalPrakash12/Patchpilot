@@ -7,6 +7,7 @@ const {
   isInsideComment,
   getLineAndSnippet,
 } = require('./scannerUtils');
+const { shannonEntropy } = require('../utils/text');
 
 /**
  * Scans project files for hardcoded secrets, API keys, credentials, and committed .env values.
@@ -208,12 +209,71 @@ async function scanForSecrets(projectPath) {
       });
     }
 
-    // 5. Generic API Keys & Tokens
+    // 5. Provider-Specific API Keys (GitHub, Stripe, Slack, OpenAI)
+    const providerPatterns = [
+      {
+        regex: /(?:^|[^a-zA-Z0-9])(gh[pousr]_[A-Za-z0-9_]{36,255})(?:[^a-zA-Z0-9]|$)/g,
+        ruleId: 'SEC-GITHUB-TOKEN',
+        title: 'Hardcoded GitHub Personal Access / OAuth Token',
+        name: 'GitHub Token',
+      },
+      {
+        regex: /(?:^|[^a-zA-Z0-9])(sk_live_[0-9a-zA-Z]{24,})(?:[^a-zA-Z0-9]|$)/g,
+        ruleId: 'SEC-STRIPE-LIVE-KEY',
+        title: 'Hardcoded Stripe Live Secret Key',
+        name: 'Stripe Live Secret Key',
+      },
+      {
+        regex: /(?:^|[^a-zA-Z0-9])(xox[baprs]-[0-9a-zA-Z]{10,48})(?:[^a-zA-Z0-9]|$)/g,
+        ruleId: 'SEC-SLACK-TOKEN',
+        title: 'Hardcoded Slack Bot / API Token',
+        name: 'Slack Token',
+      },
+      {
+        regex: /(?:^|[^a-zA-Z0-9])(sk-[a-zA-Z0-9]{32,})(?:[^a-zA-Z0-9]|$)/g,
+        ruleId: 'SEC-OPENAI-KEY',
+        title: 'Hardcoded OpenAI API Secret Key',
+        name: 'OpenAI API Key',
+      },
+    ];
+
+    for (const prov of providerPatterns) {
+      prov.regex.lastIndex = 0;
+      while ((match = prov.regex.exec(content)) !== null) {
+        if (isInsideComment(content, match.index)) continue;
+        const secretVal = match[1];
+        if (isLikelyTestOrPlaceholder(secretVal)) continue;
+
+        const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, secretVal.length);
+        findings.push({
+          category: 'secrets',
+          title: prov.title,
+          severity: 'critical',
+          confidence: 'high',
+          scanner: 'secretScanner',
+          ruleId: prov.ruleId,
+          filePath: relativePath,
+          startLine,
+          endLine,
+          evidence: `${prov.name}: ${redactSecret(secretVal)}`,
+          description: `An active ${prov.name} was discovered embedded in the source code.`,
+          impact: 'Enables unauthorized access to third-party provider accounts, data exfiltration, and fraudulent API consumption.',
+          remediation: `Immediately revoke this key in the provider console, rotate credentials, and load keys from environment variables.`,
+          codeSnippet,
+          references: ['https://cwe.mitre.org/data/definitions/798.html'],
+        });
+      }
+    }
+
+    // 6. Generic API Keys & Tokens with Shannon Entropy Filter
     const apiKeyRegex = /(?:api_key|apiKey|api-key|secret_key|secretKey|access_token|auth_token)\s*[:=]\s*['"`]([A-Za-z0-9_\-]{8,})['"`]/gi;
     while ((match = apiKeyRegex.exec(content)) !== null) {
       if (isInsideComment(content, match.index)) continue;
       const token = match[1];
       if (isLikelyTestOrPlaceholder(token)) continue;
+
+      // Entropy check: true secrets have high information entropy (> 2.8)
+      if (token.length > 8 && shannonEntropy(token) < 2.5) continue;
 
       const { startLine, endLine, codeSnippet } = getLineAndSnippet(content, match.index, match[0].length);
       findings.push({
