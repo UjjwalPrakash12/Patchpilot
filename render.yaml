@@ -1,10 +1,11 @@
 services:
   - type: web
-    name: patchpilot
+    name: patchpilot-backend
     env: node
     plan: free
     region: oregon
-    buildCommand: npm run build
+    rootDir: server
+    buildCommand: npm install --omit=dev
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -12,4 +13,4 @@ services:
       - key: MONGODB_URI
         sync: false
       - key: CORS_ORIGIN
-        sync: false
+        value: "*"

@@ -31,7 +31,10 @@ app.use(
   cors({
     origin: (origin, callback) => {
       const isLocalhost = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
-      if (!origin || allowedOrigins.includes(origin) || (config.NODE_ENV !== 'production' && isLocalhost)) {
+      const isVercel = origin && (origin.endsWith('.vercel.app') || origin === 'https://vercel.app');
+      const allowAll = config.CORS_ORIGIN === '*';
+
+      if (!origin || allowAll || allowedOrigins.includes(origin) || isVercel || (config.NODE_ENV !== 'production' && isLocalhost)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS blocked for origin: ${origin}`));
