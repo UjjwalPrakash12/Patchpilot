@@ -30,7 +30,8 @@ if (config.CORS_ORIGIN) {
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      const isLocalhost = origin && (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'));
+      if (!origin || allowedOrigins.includes(origin) || (config.NODE_ENV !== 'production' && isLocalhost)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS blocked for origin: ${origin}`));

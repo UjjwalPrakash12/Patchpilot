@@ -5,7 +5,7 @@ export default function ConfirmDialog({ isOpen, title, message, onConfirm, onCan
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2F3A32]/85 backdrop-blur-sm">
-      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+      <div className="bg-[#091026] border border-[#545748] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
         <div className="flex items-start gap-3 mb-4">
           <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5 text-[#804012]" />
           <div>

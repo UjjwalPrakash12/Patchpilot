@@ -6,7 +6,7 @@ export default function FindingCard({ finding, onClick }) {
   return (
     <button
       onClick={() => onClick?.(finding)}
-      className="w-full text-left bg-[#122372] border border-[#545748] rounded-lg p-4 hover:border-[#DB9F75] hover:bg-[#3E2411] transition-all group shadow-sm"
+      className="w-full text-left bg-[#091026] border border-[#545748] rounded-lg p-4 hover:border-[#DB9F75] hover:bg-[#3E2411] transition-all group shadow-sm"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">

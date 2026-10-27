@@ -1,40 +1,72 @@
 const { Finding } = require('../models');
 
 /**
+ * Escapes regex special characters to prevent ReDoS and regex syntax injection
+ */
+function escapeRegex(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const ALLOWED_SEVERITIES = ['critical', 'high', 'medium', 'low', 'info'];
+const ALLOWED_CATEGORIES = ['secrets', 'dependencies', 'source-code', 'configuration'];
+const ALLOWED_STATUSES = ['open', 'fix-proposed', 'fixed-verified', 'accepted-risk', 'false-positive'];
+
+/**
  * Retrieves findings for a scan with filtering, search, and pagination
  * @param {string} scanId
  * @param {Object} filters - { severity, category, status, search, page, limit }
  * @returns {Promise<{ findings: Array<Object>, total: number, page: number, totalPages: number }>}
  */
 async function getFindingsByScan(scanId, filters = {}) {
-  const query = { scanId };
+  const query = { scanId: String(scanId).trim() };
 
+  // 1. Sanitize severity filter (prevent operator injection)
   if (filters.severity) {
-    if (Array.isArray(filters.severity)) {
-      query.severity = { $in: filters.severity };
-    } else {
-      query.severity = filters.severity;
+    const rawSeverities = Array.isArray(filters.severity) ? filters.severity : [filters.severity];
+    const validSeverities = rawSeverities
+      .filter((s) => typeof s === 'string')
+      .map((s) => s.toLowerCase().trim())
+      .filter((s) => ALLOWED_SEVERITIES.includes(s));
+
+    if (validSeverities.length === 1) {
+      query.severity = validSeverities[0];
+    } else if (validSeverities.length > 1) {
+      query.severity = { $in: validSeverities };
     }
   }
 
+  // 2. Sanitize category filter
   if (filters.category) {
-    if (Array.isArray(filters.category)) {
-      query.category = { $in: filters.category };
-    } else {
-      query.category = filters.category;
+    const rawCategories = Array.isArray(filters.category) ? filters.category : [filters.category];
+    const validCategories = rawCategories
+      .filter((c) => typeof c === 'string')
+      .map((c) => c.toLowerCase().trim())
+      .filter((c) => ALLOWED_CATEGORIES.includes(c));
+
+    if (validCategories.length === 1) {
+      query.category = validCategories[0];
+    } else if (validCategories.length > 1) {
+      query.category = { $in: validCategories };
     }
   }
 
-  if (filters.status) {
-    query.status = filters.status;
+  // 3. Sanitize status filter
+  if (typeof filters.status === 'string') {
+    const cleanStatus = filters.status.toLowerCase().trim();
+    if (ALLOWED_STATUSES.includes(cleanStatus)) {
+      query.status = cleanStatus;
+    }
   }
 
-  if (filters.ruleId) {
-    query.ruleId = filters.ruleId;
+  // 4. Sanitize ruleId filter
+  if (typeof filters.ruleId === 'string' && filters.ruleId.trim()) {
+    query.ruleId = filters.ruleId.trim().slice(0, 100);
   }
 
-  if (filters.search) {
-    const searchRegex = new RegExp(filters.search, 'i');
+  // 5. Safe search using escaped regex (ReDoS safe, max 100 characters)
+  if (typeof filters.search === 'string' && filters.search.trim()) {
+    const escaped = escapeRegex(filters.search.trim().slice(0, 100));
+    const searchRegex = new RegExp(escaped, 'i');
     query.$or = [
       { title: searchRegex },
       { description: searchRegex },

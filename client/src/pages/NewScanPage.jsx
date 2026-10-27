@@ -163,7 +163,7 @@ export default function NewScanPage() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden p-1 flex mb-6">
+      <div className="bg-[#091026] border border-[#545748] rounded-xl overflow-hidden p-1 flex mb-6">
         <button
           type="button"
           onClick={() => {
@@ -214,7 +214,7 @@ export default function NewScanPage() {
       )}
 
       {/* Tab Panels */}
-      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 sm:p-8 shadow-xl">
+      <div className="bg-[#091026] border border-[#545748] rounded-xl p-6 sm:p-8 shadow-xl">
         {activeTab === 'zip' ? (
           <form onSubmit={handleZipSubmit} className="space-y-6">
             <div>
@@ -245,7 +245,7 @@ export default function NewScanPage() {
                 />
 
                 {selectedFile ? (
-                  <div className="flex items-center justify-between bg-[#122372] border border-[#545748] rounded-lg p-4 text-left">
+                  <div className="flex items-center justify-between bg-[#091026] border border-[#545748] rounded-lg p-4 text-left">
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="p-2.5 rounded-lg bg-[#3E2411] text-[#DB9F75] border border-[#545748]">
                         <FileCode2 className="h-6 w-6" />
@@ -296,11 +296,11 @@ export default function NewScanPage() {
             <button
               type="submit"
               disabled={isLoading || !selectedFile}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#091026] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {isLoading ? (
                 <>
-                  <LoadingSpinner size="sm" className="text-[#122372]" />
+                  <LoadingSpinner size="sm" className="text-[#091026]" />
                   <span>Uploading & Queuing Scan...</span>
                 </>
               ) : (
@@ -362,11 +362,11 @@ export default function NewScanPage() {
             <button
               type="submit"
               disabled={isLoading || !githubUrl.trim() || !isGithubValid}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#091026] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {isLoading ? (
                 <>
-                  <LoadingSpinner size="sm" className="text-[#122372]" />
+                  <LoadingSpinner size="sm" className="text-[#091026]" />
                   <span>Cloning & Queuing Scan...</span>
                 </>
               ) : (

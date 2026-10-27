@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand-navy: #122372;
+  --color-brand-navy: #091026;
   --color-brand-forest: #2F3A32;
   --color-brand-sage: #545748;
   --color-brand-peach: #DB9F75;
@@ -33,7 +33,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #122372;
+  background: #091026;
   border: 1px solid #545748;
   border-radius: 4px;
 }

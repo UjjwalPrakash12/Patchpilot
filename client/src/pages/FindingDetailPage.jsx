@@ -62,7 +62,7 @@ function getLanguageFromPath(filePath) {
 function getVerificationBadgeClasses(status) {
   switch (status) {
     case 'passed':
-      return 'bg-[#122372] text-[#DB9F75] border border-[#545748]';
+      return 'bg-[#091026] text-[#DB9F75] border border-[#545748]';
     case 'failed':
       return 'bg-[#3E2411] text-[#804012] border border-[#804012]';
     case 'inconclusive':
@@ -77,7 +77,7 @@ function getConfidenceBadgeClasses(confidence) {
     case 'high':
       return 'bg-[#3E2411] text-[#DB9F75] border border-[#804012]';
     case 'medium':
-      return 'bg-[#122372] text-[#DB9F75] border border-[#545748]';
+      return 'bg-[#091026] text-[#DB9F75] border border-[#545748]';
     case 'low':
       return 'bg-[#2F3A32] text-[#545748] border border-[#545748]';
     default:
@@ -225,7 +225,7 @@ ${fixData.fixedCode}
           <div className="mt-6">
             <Link
               to="/history"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#122372] text-[#DB9F75] hover:bg-[#3E2411] border border-[#545748] rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#091026] text-[#DB9F75] hover:bg-[#3E2411] border border-[#545748] rounded-lg transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Scans</span>
@@ -253,7 +253,7 @@ ${fixData.fixedCode}
       </div>
 
       {/* Main Finding Header Card */}
-      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
+      <div className="bg-[#091026] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-wrap">
             <SeverityBadge severity={finding.severity} className="text-xs px-2.5 py-1" />
@@ -322,7 +322,7 @@ ${fixData.fixedCode}
 
       {/* Evidence Code Snippet Card */}
       {displayEvidence && (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
           <div className="px-5 py-3.5 border-b border-[#545748] flex items-center justify-between bg-[#3E2411]">
             <div className="flex items-center gap-2">
               <FileCode className="h-4 w-4 text-[#DB9F75]" />
@@ -356,7 +356,7 @@ ${fixData.fixedCode}
 
       {/* Description Card */}
       {finding.description && (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
           <div className="flex items-center gap-2 text-[#DB9F75]">
             <FileText className="h-4 w-4 text-[#DB9F75]" />
             <h2 className="text-sm font-semibold">Description</h2>
@@ -369,7 +369,7 @@ ${fixData.fixedCode}
 
       {/* Impact Card */}
       {finding.impact && (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
           <div className="flex items-center gap-2 text-[#DB9F75]">
             <ShieldAlert className="h-4 w-4 text-[#804012]" />
             <h2 className="text-sm font-semibold">Security Impact</h2>
@@ -382,7 +382,7 @@ ${fixData.fixedCode}
 
       {/* Remediation Instructions Card */}
       {finding.remediation && (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
           <div className="flex items-center gap-2 text-[#DB9F75]">
             <ShieldCheck className="h-4 w-4 text-[#DB9F75]" />
             <h2 className="text-sm font-semibold">Remediation Guidance</h2>
@@ -394,7 +394,7 @@ ${fixData.fixedCode}
       )}
 
       {/* Generate Fix Proposal Section */}
-      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
+      <div className="bg-[#091026] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-semibold text-[#DB9F75] flex items-center gap-2">
@@ -409,16 +409,16 @@ ${fixData.fixedCode}
           <button
             onClick={handleGenerateFix}
             disabled={isGeneratingFix}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-[#091026] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             {isGeneratingFix ? (
               <>
-                <LoadingSpinner size="sm" className="text-[#122372]" />
+                <LoadingSpinner size="sm" className="text-[#091026]" />
                 <span>Generating Fix...</span>
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 text-[#122372]" />
+                <Sparkles className="h-4 w-4 text-[#091026]" />
                 <span>{fixData ? 'Regenerate Fix' : 'Generate Fix'}</span>
               </>
             )}
@@ -459,7 +459,7 @@ ${fixData.fixedCode}
               )}
 
               {fixData.fixedCode && (
-                <div className="rounded-lg border border-[#545748] bg-[#122372] overflow-hidden">
+                <div className="rounded-lg border border-[#545748] bg-[#091026] overflow-hidden">
                   <div className="px-3.5 py-1.5 bg-[#3E2411] border-b border-[#545748] text-xs font-semibold text-[#DB9F75] flex items-center justify-between">
                     <span>Proposed Fixed Code</span>
                     <span className="text-[10px] uppercase font-mono">Remediated</span>
@@ -534,7 +534,7 @@ ${fixData.fixedCode}
 
       {/* External References Section */}
       {finding.references && finding.references.length > 0 && (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-3 shadow-md">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl p-5 space-y-3 shadow-md">
           <h2 className="text-sm font-semibold text-[#DB9F75] flex items-center gap-2">
             <ExternalLink className="h-4 w-4 text-[#DB9F75]" />
             <span>References & Advisories</span>

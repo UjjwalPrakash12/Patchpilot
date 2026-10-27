@@ -34,7 +34,25 @@ const apiRateLimiter = rateLimit({
   },
 });
 
+/**
+ * Rate limiter for fix proposal generation (compute-intensive AST operations)
+ */
+const fixRateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: {
+      message: 'Too many remediation fix proposals requested. Please slow down.',
+      code: 'FIX_RATE_LIMIT_EXCEEDED',
+    },
+  },
+});
+
 module.exports = {
   scanRateLimiter,
   apiRateLimiter,
+  fixRateLimiter,
 };

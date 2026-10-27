@@ -13,7 +13,7 @@ export default function Layout() {
   return (
     <div className="min-h-screen bg-[#2F3A32] text-[#DB9F75] flex flex-col font-sans selection:bg-[#804012] selection:text-[#DB9F75]">
       {/* Top Navigation Bar */}
-      <header className="border-b border-[#545748]/50 bg-[#122372]/95 backdrop-blur-md sticky top-0 z-50 shadow-md">
+      <header className="border-b border-[#545748]/50 bg-[#091026]/95 backdrop-blur-md sticky top-0 z-50 shadow-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="grid size-9 place-items-center rounded-sm border border-[#804012] bg-[#3E2411] text-[#DB9F75] shadow-sm transition group-hover:border-[#DB9F75]">
@@ -72,7 +72,7 @@ export default function Layout() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#545748]/50 bg-[#122372] text-xs text-[#545748] py-8">
+      <footer className="border-t border-[#545748]/50 bg-[#091026] text-xs text-[#545748] py-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
           <div className="flex items-center gap-2 text-[#DB9F75]/80">
             <ShieldCheck className="size-4 text-[#804012]" />

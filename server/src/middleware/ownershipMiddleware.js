@@ -45,6 +45,57 @@ async function verifyScanOwnership(req, res, next) {
 }
 
 /**
+ * Middleware to verify that the requestor owns the target finding via its parent scan
+ */
+async function verifyFindingOwnership(req, res, next) {
+  try {
+    const { findingId } = req.params;
+    if (!findingId) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Finding ID parameter is required', code: 'MISSING_FINDING_ID' },
+      });
+    }
+
+    const { Finding } = require('../models');
+    const finding = await Finding.findOne({ findingId });
+    if (!finding) {
+      return res.status(404).json({
+        success: false,
+        error: { message: `Finding not found with ID: ${findingId}`, code: 'FINDING_NOT_FOUND' },
+      });
+    }
+
+    const scan = await Scan.findOne({ scanId: finding.scanId });
+    if (!scan) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'Parent scan not found for this finding', code: 'SCAN_NOT_FOUND' },
+      });
+    }
+
+    const headerToken = req.headers['x-owner-token'];
+    if (scan.ownerToken) {
+      if (!headerToken || headerToken !== scan.ownerToken) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            message: 'Access denied: invalid or missing x-owner-token header for this finding',
+            code: 'FORBIDDEN_FINDING_ACCESS',
+          },
+        });
+      }
+    }
+
+    req.finding = finding;
+    req.scan = scan;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
  * Helper to retrieve owner token from header
  */
 function getOwnerToken(req) {
@@ -53,5 +104,6 @@ function getOwnerToken(req) {
 
 module.exports = {
   verifyScanOwnership,
+  verifyFindingOwnership,
   getOwnerToken,
 };

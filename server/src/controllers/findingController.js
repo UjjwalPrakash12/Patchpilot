@@ -5,8 +5,7 @@ const { findingService } = require('../services');
  */
 async function getFinding(req, res, next) {
   try {
-    const { findingId } = req.params;
-    const finding = await findingService.getFindingById(findingId);
+    const finding = req.finding || (await findingService.getFindingById(req.params.findingId));
 
     res.json({
       success: true,
@@ -22,8 +21,8 @@ async function getFinding(req, res, next) {
  */
 async function proposeFix(req, res, next) {
   try {
-    const { findingId } = req.params;
-    const fix = await findingService.proposeFix(findingId);
+    const finding = req.finding || (await findingService.getFindingById(req.params.findingId));
+    const fix = await findingService.proposeFix(finding);
 
     res.json({
       success: true,
@@ -42,14 +41,14 @@ async function updateFindingStatus(req, res, next) {
     const { findingId } = req.params;
     const { status } = req.body || {};
 
-    if (!status) {
+    if (!status || typeof status !== 'string') {
       return res.status(400).json({
         success: false,
-        error: { message: 'Status field is required in request body', code: 'MISSING_STATUS' },
+        error: { message: 'Status field must be a valid string', code: 'INVALID_STATUS' },
       });
     }
 
-    const updatedFinding = await findingService.updateFindingStatus(findingId, status);
+    const updatedFinding = await findingService.updateFindingStatus(findingId, status.trim());
 
     res.json({
       success: true,

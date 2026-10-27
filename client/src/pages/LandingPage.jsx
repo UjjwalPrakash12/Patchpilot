@@ -137,7 +137,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative mx-auto max-w-7xl px-5 pb-16 pt-12 lg:px-8 lg:pt-16">
         <div className="max-w-3xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#545748] bg-[#122372] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#DB9F75] shadow-sm">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#545748] bg-[#091026] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-[#DB9F75] shadow-sm">
             <Sparkles className="size-3.5 text-[#DB9F75]" />
             <span>Deterministic Security Engine</span>
           </div>
@@ -155,7 +155,7 @@ export default function LandingPage() {
         {/* Scan Input & Defense Layers Grid */}
         <div className="mt-12 grid gap-5 lg:grid-cols-[1.45fr_0.85fr]">
           {/* Main Action Widget */}
-          <div className="rounded-md border border-[#545748] bg-[#122372] p-2 shadow-2xl">
+          <div className="rounded-md border border-[#545748] bg-[#091026] p-2 shadow-2xl">
             {/* Tab Switcher */}
             <div className="flex gap-1 rounded-sm bg-[#3E2411] p-1 border border-[#545748]">
               <button
@@ -219,7 +219,7 @@ export default function LandingPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#DB9F75] px-5 py-3.5 text-sm font-semibold text-[#122372] transition hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 shadow-md"
+                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#DB9F75] px-5 py-3.5 text-sm font-semibold text-[#091026] transition hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 shadow-md"
                     >
                       <Play className="size-4 fill-current" />
                       <span>{isSubmitting ? 'Analyzing...' : 'Start scan'}</span>
@@ -294,7 +294,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right Card: What We Check (5 Layers) */}
-          <div className="rounded-md border border-[#545748] bg-[#122372] p-6 flex flex-col justify-between shadow-xl">
+          <div className="rounded-md border border-[#545748] bg-[#091026] p-6 flex flex-col justify-between shadow-xl">
             <div>
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -359,7 +359,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <div className="overflow-hidden rounded-md border border-[#545748] bg-[#122372]">
+          <div className="overflow-hidden rounded-md border border-[#545748] bg-[#091026]">
             <div className="hidden grid-cols-[1.5fr_1fr_0.8fr_0.8fr_24px] gap-4 border-b border-[#545748] px-5 py-3 font-mono text-[10px] uppercase tracking-widest text-[#545748] sm:grid bg-[#3E2411]">
               <span>Project / Repository</span>
               <span>Source Type</span>

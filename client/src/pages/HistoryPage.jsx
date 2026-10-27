@@ -82,7 +82,7 @@ export default function HistoryPage() {
         <div>
           <Link
             to="/scan/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors shadow-md border border-[#DB9F75]"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#091026] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors shadow-md border border-[#DB9F75]"
           >
             <Plus className="h-4 w-4" />
             <span>New Scan</span>
@@ -113,7 +113,7 @@ export default function HistoryPage() {
           <p className="mt-4 text-sm text-[#545748]">Loading your scan history...</p>
         </div>
       ) : scans.length === 0 ? (
-        <div className="bg-[#122372] border border-[#545748] rounded-2xl p-12 text-center shadow-lg">
+        <div className="bg-[#091026] border border-[#545748] rounded-2xl p-12 text-center shadow-lg">
           <EmptyState
             icon={Shield}
             title="No Scans Yet"
@@ -121,7 +121,7 @@ export default function HistoryPage() {
             action={
               <Link
                 to="/scan/new"
-                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors border border-[#DB9F75]"
+                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-[#091026] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors border border-[#DB9F75]"
               >
                 <Plus className="h-4 w-4" />
                 <span>Start Your First Scan</span>
@@ -130,7 +130,7 @@ export default function HistoryPage() {
           />
         </div>
       ) : (
-        <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
+        <div className="bg-[#091026] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-[#3E2411] border-b border-[#545748] text-xs font-semibold text-[#545748] uppercase tracking-wider">

@@ -139,12 +139,22 @@ async function githubScan(req, res, next) {
 async function getScans(req, res, next) {
   try {
     const ownerToken = req.headers['x-owner-token'] || req.query.ownerToken;
-    const query = {};
 
-    if (ownerToken) {
-      query.ownerToken = ownerToken;
+    // Security: Do not expose all scans across the system if ownerToken is missing
+    if (!ownerToken || typeof ownerToken !== 'string' || !ownerToken.trim()) {
+      return res.json({
+        success: true,
+        data: [],
+        pagination: {
+          total: 0,
+          page: 1,
+          limit: 20,
+          totalPages: 0,
+        },
+      });
     }
 
+    const query = { ownerToken: String(ownerToken).trim() };
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
     const skip = (page - 1) * limit;

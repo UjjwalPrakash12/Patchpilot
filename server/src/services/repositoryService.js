@@ -133,15 +133,39 @@ function safeDownload(initialUrl, destinationFile, maxRedirects = 5) {
           );
         }
 
+        let downloadedBytes = 0;
+        let isAborted = false;
         const fileStream = fs.createWriteStream(destinationFile);
+
+        res.on('data', (chunk) => {
+          downloadedBytes += chunk.length;
+          if (downloadedBytes > config.UPLOAD_MAX_SIZE && !isAborted) {
+            isAborted = true;
+            req.destroy();
+            fileStream.destroy();
+            try {
+              if (fs.existsSync(destinationFile)) fs.unlinkSync(destinationFile);
+            } catch {}
+            reject(
+              new Error(
+                `Repository archive exceeds maximum allowed size of ${(config.UPLOAD_MAX_SIZE / (1024 * 1024)).toFixed(0)}MB`
+              )
+            );
+          }
+        });
+
         res.pipe(fileStream);
 
         fileStream.on('finish', () => {
-          fileStream.close(() => resolve());
+          if (!isAborted) {
+            fileStream.close(() => resolve());
+          }
         });
 
         fileStream.on('error', (err) => {
-          fs.unlink(destinationFile, () => {});
+          try {
+            if (fs.existsSync(destinationFile)) fs.unlinkSync(destinationFile);
+          } catch {}
           reject(err);
         });
       });
