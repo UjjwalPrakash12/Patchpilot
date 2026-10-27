@@ -1,318 +1,427 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
+  GitBranch,
   Upload,
+  Play,
+  LockKeyhole,
+  Radar,
+  Lock,
   Search,
-  FileText,
-  Wrench,
-  Key,
-  Package,
-  Code,
-  Settings,
-  Shield,
-  ArrowRight,
+  Code2,
+  Terminal,
+  Layers,
+  ChevronRight,
+  Sparkles,
+  CloudUpload,
+  FileArchive,
   AlertTriangle,
-  CheckCircle,
-  FileCode,
-  Eye,
+  CheckCircle2,
+  ExternalLink,
 } from 'lucide-react';
-import SeverityBadge from '../components/SeverityBadge';
-import { getCategoryBadgeClasses } from '../utils/severity';
+import { githubScan, uploadScan, getScans } from '../services/api';
+import useOwnerToken from '../hooks/useOwnerToken';
+
+const stages = [
+  { label: 'Dependency audit', detail: 'Known CVEs & lockfile integrity', icon: Lock },
+  { label: 'Secret detection', detail: 'Shannon entropy & token signatures', icon: Search },
+  { label: 'AST static analysis', detail: 'Request-to-sink taint tracking', icon: Code2 },
+  { label: 'Configuration review', detail: 'CORS, Helmet headers & cookie flags', icon: Terminal },
+  { label: 'Framework hygiene', detail: 'Web storage tokens & console leaks', icon: Layers },
+];
 
 export default function LandingPage() {
-  const steps = [
-    {
-      step: '01',
-      title: 'Submit Code',
-      description: 'Upload a ZIP archive of your project or paste a public GitHub repository link.',
-      icon: Upload,
-    },
-    {
-      step: '02',
-      title: 'Automated Scan',
-      description: 'Our automated multi-scanner pipeline inspects code, secrets, dependencies, and configuration.',
-      icon: Search,
-    },
-    {
-      step: '03',
-      title: 'Review Findings',
-      description: 'Get plain-English explanations of security weaknesses, severity levels, and real-world impact.',
-      icon: FileText,
-    },
-    {
-      step: '04',
-      title: 'Fix Issues',
-      description: 'Review copy-paste remediations and download patches to secure your application in minutes.',
-      icon: Wrench,
-    },
-  ];
+  const [activeTab, setActiveTab] = useState('github'); // 'github' | 'upload'
+  const [githubUrl, setGithubUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const checkCategories = [
-    {
-      title: 'Secret Detection',
-      icon: Key,
-      iconColor: 'text-purple-400',
-      borderColor: 'border-purple-500/20',
-      bullets: [
-        'API keys, JWT secrets, OAuth tokens, and database credentials',
-        'High-entropy strings and hardcoded service passwords',
-        'Accidental credential exposure in source and config files',
-      ],
-    },
-    {
-      title: 'Dependency Vulnerabilities',
-      icon: Package,
-      iconColor: 'text-cyan-400',
-      borderColor: 'border-cyan-500/20',
-      bullets: [
-        'Known CVE vulnerabilities across npm and package dependencies',
-        'Direct and transitive dependencies with known exploits',
-        'Actionable upgrade recommendations and patch versions',
-      ],
-    },
-    {
-      title: 'Code Security',
-      icon: Code,
-      iconColor: 'text-emerald-400',
-      borderColor: 'border-emerald-500/20',
-      bullets: [
-        'Dangerous eval(), prototype pollution, and unsafe regex execution',
-        'Cross-Site Scripting (XSS) risks and improper innerHTML usage',
-        'Unsanitized inputs feeding SQL, NoSQL, and shell commands',
-      ],
-    },
-    {
-      title: 'Configuration Issues',
-      icon: Settings,
-      iconColor: 'text-amber-400',
-      borderColor: 'border-amber-500/20',
-      bullets: [
-        'Overly permissive CORS rules allowing arbitrary origins (*)',
-        'Missing security response headers like Helmet CSP and HSTS',
-        'Missing API rate limiting and insecure session cookie flags',
-      ],
-    },
-  ];
+  const [recentScans, setRecentScans] = useState([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-  const limitations = [
-    'Does not replace a dedicated human penetration test or professional third-party audit.',
-    'Cannot detect bespoke multi-step business logic vulnerabilities specific to domain workflows.',
-    'Performs static code & configuration analysis only; does not execute dynamic attacks against live servers.',
-    'AI-generated remediation patches should always be reviewed and tested in staging before deploying to production.',
-  ];
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+  const ownerToken = useOwnerToken();
+
+  // Load actual recent scans from MongoDB
+  useEffect(() => {
+    async function loadScans() {
+      try {
+        setIsLoadingHistory(true);
+        const res = await getScans(ownerToken);
+        const list = res?.data || res || [];
+        setRecentScans(Array.isArray(list) ? list.slice(0, 5) : []);
+      } catch (err) {
+        console.warn('Unable to load recent scans:', err.message);
+      } finally {
+        setIsLoadingHistory(false);
+      }
+    }
+    loadScans();
+  }, [ownerToken]);
+
+  // Handle GitHub Scan Submission
+  const handleGithubSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    const trimmed = githubUrl.trim();
+    if (!trimmed) {
+      setErrorMessage('Please enter a public GitHub repository URL.');
+      return;
+    }
+
+    if (!trimmed.startsWith('https://github.com/')) {
+      setErrorMessage('Repository URL must begin with https://github.com/owner/repository');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const res = await githubScan(trimmed, ownerToken);
+      const scanId = res?.data?.scanId || res?.scanId;
+      if (!scanId) throw new Error('Scan initiated but no scan ID was returned.');
+      navigate(`/scan/${scanId}`);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to start GitHub scan. Please verify repository is public.');
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle ZIP Archive Upload
+  const handleFileProcess = async (file) => {
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      setErrorMessage('Only .zip archive files are supported.');
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      setErrorMessage('Archive size exceeds the 50MB limit.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+      const res = await uploadScan(file, ownerToken);
+      const scanId = res?.data?.scanId || res?.scanId;
+      if (!scanId) throw new Error('Scan initiated but no scan ID was returned.');
+      navigate(`/scan/${scanId}`);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to upload archive. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      handleFileProcess(file);
+    }
+  };
 
   return (
-    <div className="space-y-24 py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div className="min-h-screen text-stone-100">
       {/* Hero Section */}
-      <section className="text-center max-w-4xl mx-auto pt-6 pb-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
-          <Shield className="h-3.5 w-3.5" />
-          <span>Automated Security Scanner for Modern Web Apps</span>
-        </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-100 leading-tight">
-          Find Security Weaknesses in Your AI-Built Website
-        </h1>
-        <p className="mt-6 text-lg sm:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto">
-          Scans your code for exposed secrets, vulnerable packages, insecure patterns, and dangerous configurations—with plain English explanations and ready-to-apply fixes.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/scan/new"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-lg shadow-emerald-950/50"
-          >
-            <span>Scan Your Project Now</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            to="/history"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-medium text-gray-300 bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 transition-colors"
-          >
-            <span>View Recent Scans</span>
-          </Link>
-        </div>
-        <div className="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-            No account required
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-            Fast analysis in seconds
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
-            Remediation patches
-          </span>
-        </div>
-      </section>
+      <section className="relative mx-auto max-w-7xl px-5 pb-16 pt-12 lg:px-8 lg:pt-18">
+        <div className="max-w-3xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/[0.06] px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-blue-300">
+            <Sparkles className="size-3.5" /> Deterministic Security Engine
+          </div>
 
-      {/* How it Works Section */}
-      <section>
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-100">
-            How It Works
-          </h2>
-          <p className="mt-2 text-sm sm:text-base text-gray-400">
-            A frictionless workflow designed to surface critical flaws quickly.
+          <h1 className="text-balance text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.08] tracking-[-0.04em] text-white">
+            Ship with confidence.<br />
+            <span className="text-slate-500">Find vulnerabilities before they deploy.</span>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-7 text-slate-400 sm:text-lg">
+            A developer-first security scanner that analyzes AST code paths, detects leaked secrets via Shannon entropy, reviews configuration posture, and generates verified remediation patches.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map(({ step, title, description, icon: Icon }) => (
-            <div
-              key={step}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-6 relative flex flex-col justify-between hover:border-gray-700 transition-colors"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-2.5 rounded-lg bg-gray-800 text-emerald-400">
-                    <Icon className="h-5 w-5" />
+        {/* Scan Input & Defense Layers Grid */}
+        <div className="mt-12 grid gap-5 lg:grid-cols-[1.45fr_0.85fr]">
+          {/* Main Action Widget */}
+          <div className="rounded-md border border-white/10 bg-[#0e1319]/90 p-2 shadow-2xl shadow-black/40 backdrop-blur">
+            {/* Tab Switcher */}
+            <div className="flex gap-1 rounded-sm bg-black/30 p-1">
+              <button
+                type="button"
+                onClick={() => { setActiveTab('github'); setErrorMessage(null); }}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-sm px-4 py-3 text-sm font-medium transition ${
+                  activeTab === 'github'
+                    ? 'bg-white/[0.09] text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <GitBranch className="size-4" />
+                <span>GitHub repository</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => { setActiveTab('upload'); setErrorMessage(null); }}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-sm px-4 py-3 text-sm font-medium transition ${
+                  activeTab === 'upload'
+                    ? 'bg-white/[0.09] text-white shadow-sm'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <Upload className="size-4" />
+                <span>Upload archive</span>
+              </button>
+            </div>
+
+            {/* Tab 1: GitHub Repository Input */}
+            <div className="p-6 sm:p-8">
+              {errorMessage && (
+                <div className="mb-5 flex items-start gap-2.5 rounded-sm border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
+                  <AlertTriangle className="size-4 flex-shrink-0 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {activeTab === 'github' ? (
+                <>
+                  <div className="mb-5">
+                    <p className="text-base font-semibold text-white">Scan a public repository</p>
+                    <p className="mt-1 text-sm text-slate-400">
+                      Paste a GitHub URL to trigger our 5-stage automated security analysis.
+                    </p>
                   </div>
-                  <span className="text-xs font-mono font-bold text-gray-600">
-                    {step}
-                  </span>
+
+                  <form onSubmit={handleGithubSubmit} className="flex flex-col gap-3 sm:flex-row">
+                    <div className="flex flex-1 items-center gap-3 rounded-sm border border-white/10 bg-black/30 px-4 py-3.5 focus-within:border-blue-400/50 transition-colors">
+                      <GitBranch className="size-4 text-slate-500" />
+                      <input
+                        type="url"
+                        value={githubUrl}
+                        onChange={(e) => setGithubUrl(e.target.value)}
+                        placeholder="https://github.com/expressjs/express"
+                        className="min-w-0 flex-1 bg-transparent font-mono text-sm text-white outline-none placeholder:text-slate-600"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-blue-500 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-blue-400 disabled:opacity-50"
+                    >
+                      <Play className="size-4 fill-current" />
+                      <span>{isSubmitting ? 'Analyzing...' : 'Start scan'}</span>
+                    </button>
+                  </form>
+
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                    <span className="flex items-center gap-1.5">
+                      <LockKeyhole className="size-3 text-slate-400" />
+                      Isolated container extraction · Zero code retention
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setGithubUrl('https://github.com/expressjs/express')}
+                      className="text-blue-400 hover:text-blue-300 transition-colors underline underline-offset-2"
+                    >
+                      Load demo repo (express)
+                    </button>
+                  </div>
+                </>
+              ) : (
+                /* Tab 2: ZIP File Drag-and-Drop */
+                <div>
+                  <div className="mb-5">
+                    <p className="text-base font-semibold text-white">Upload project archive</p>
+                    <p className="mt-1 text-sm text-slate-400">
+                      Upload your project codebase as a compressed .zip archive for on-premise style scanning.
+                    </p>
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".zip,application/zip"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedFile(file);
+                        handleFileProcess(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`group flex min-h-48 w-full flex-col items-center justify-center rounded-sm border border-dashed cursor-pointer transition p-6 text-center ${
+                      isDragging
+                        ? 'border-blue-400 bg-blue-400/[0.08]'
+                        : 'border-white/15 bg-black/20 hover:border-blue-400/50 hover:bg-blue-400/[0.03]'
+                    }`}
+                  >
+                    <CloudUpload className="mb-3 size-9 text-slate-500 transition group-hover:text-blue-300" />
+                    <p className="text-sm font-medium text-slate-200">
+                      {isSubmitting
+                        ? 'Uploading & extracting archive...'
+                        : selectedFile
+                        ? selectedFile.name
+                        : 'Drop your project .zip archive here'}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      or click to browse from device · up to 50 MB
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-200 mb-2">
-                  {title}
-                </h3>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  {description}
-                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Right Card: What We Check (5 Layers) */}
+          <div className="rounded-md border border-white/10 bg-[#11161d] p-6 flex flex-col justify-between">
+            <div>
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-10 place-items-center rounded-sm bg-blue-400/10 text-blue-400 border border-blue-400/20">
+                    <Radar className="size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">What we inspect</p>
+                    <p className="text-xs text-slate-500">Five defensive layers</p>
+                  </div>
+                </div>
+                <span className="font-mono text-xs text-slate-500">v1.0.0</span>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                {stages.map((stage, index) => {
+                  const Icon = stage.icon;
+                  return (
+                    <div key={stage.label} className="flex items-center gap-3">
+                      <div className="relative grid size-8 place-items-center rounded-sm border border-white/10 bg-white/[0.03] text-slate-400 flex-shrink-0">
+                        <Icon className="size-4" />
+                        {index < stages.length - 1 && (
+                          <span className="absolute left-1/2 top-full h-4 w-px bg-white/10" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm text-slate-200 font-medium truncate">{stage.label}</p>
+                        <p className="font-mono text-[11px] text-slate-500 truncate">{stage.detail}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ))}
+
+            <div className="mt-6 pt-4 border-t border-white/[0.07] flex items-center justify-between text-xs text-slate-500">
+              <span>AST Taint Engine Active</span>
+              <span className="text-emerald-400 font-mono">100% On-Device</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* What We Check Section */}
-      <section>
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-100">
-            What We Check
-          </h2>
-          <p className="mt-2 text-sm sm:text-base text-gray-400">
-            Four specialized detection engines guarding your application layers.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {checkCategories.map(({ title, icon: Icon, iconColor, borderColor, bullets }) => (
-            <div
-              key={title}
-              className={`bg-gray-900 border ${borderColor} rounded-xl p-6 hover:border-gray-700 transition-colors`}
+      {/* Activity / Recent Scans Section */}
+      <section className="relative border-t border-white/[0.07] bg-[#0d1015]">
+        <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+          <div className="mb-7 flex items-end justify-between">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-blue-400">
+                Workspace History
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white">
+                Recent Scans
+              </h2>
+            </div>
+            <Link
+              to="/history"
+              className="hidden items-center gap-1 text-sm text-slate-400 transition hover:text-white sm:flex"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`p-2.5 rounded-lg bg-gray-950 border border-gray-800 ${iconColor}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-200">{title}</h3>
+              <span>View all scans</span>
+              <ChevronRight className="size-4" />
+            </Link>
+          </div>
+
+          <div className="overflow-hidden rounded-md border border-white/10 bg-[#0e1319]">
+            <div className="hidden grid-cols-[1.5fr_1fr_0.8fr_0.8fr_24px] gap-4 border-b border-white/[0.07] px-5 py-3 font-mono text-[10px] uppercase tracking-widest text-slate-500 sm:grid">
+              <span>Project / Repository</span>
+              <span>Source Type</span>
+              <span>Date</span>
+              <span>Security Result</span>
+              <span />
+            </div>
+
+            {isLoadingHistory ? (
+              <div className="py-8 text-center text-sm text-slate-500">
+                Loading recent scan records...
               </div>
-              <ul className="space-y-2.5">
-                {bullets.map((bullet, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-2 flex-shrink-0" />
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
+            ) : recentScans.length > 0 ? (
+              recentScans.map((scan) => (
+                <Link
+                  key={scan.scanId}
+                  to={`/scan/${scan.scanId}`}
+                  className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-white/[0.06] px-5 py-4 last:border-0 hover:bg-white/[0.02] transition sm:grid-cols-[1.5fr_1fr_0.8fr_0.8fr_24px]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid size-8 place-items-center rounded-sm bg-white/[0.04] text-slate-400">
+                      {scan.submissionType === 'github' ? (
+                        <GitBranch className="size-4" />
+                      ) : (
+                        <FileArchive className="size-4" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-200">{scan.projectName}</p>
+                      <p className="font-mono text-[11px] text-slate-500 sm:hidden">
+                        {scan.submissionType} · {new Date(scan.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-      {/* Sample Finding Preview */}
-      <section className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-gray-800">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
-              <Eye className="h-3.5 w-3.5" />
-              <span>SAMPLE FINDING PREVIEW</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-100">
-              Clear, Actionable Findings
-            </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Every finding explains what happened, why it matters, and gives you tested remediation steps.
-            </p>
-          </div>
-          <Link
-            to="/scan/new"
-            className="inline-flex items-center gap-1 text-sm font-medium text-emerald-400 hover:text-emerald-300 self-start sm:self-auto"
-          >
-            <span>Scan your code</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
+                  <span className="hidden font-mono text-xs text-slate-400 sm:block uppercase">
+                    {scan.submissionType}
+                  </span>
 
-        {/* Realistic Sample Finding Card */}
-        <div className="bg-gray-950 border border-gray-800 rounded-xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <SeverityBadge severity="high" />
-              <span className={getCategoryBadgeClasses('secrets')}>
-                secrets
-              </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-800 text-gray-400 border border-gray-700">
-                Rule: SEC-HARDCODED-API-KEY
-              </span>
-            </div>
-            <span className="text-xs text-gray-500 font-mono">Scanner: Gitleaks Engine</span>
-          </div>
+                  <span className="hidden text-xs text-slate-500 sm:block">
+                    {new Date(scan.createdAt).toLocaleDateString()}
+                  </span>
 
-          <div>
-            <h3 className="text-lg font-semibold text-gray-100">
-              Hardcoded API Key Detected
-            </h3>
-            <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
-              <FileCode className="h-3.5 w-3.5 text-gray-500" />
-              <span className="font-mono text-gray-300">config/api.js</span>
-              <span className="text-gray-500">:15</span>
-            </div>
-          </div>
+                  <span
+                    className={`text-right text-xs font-medium sm:text-left ${
+                      scan.totalFindings > 0 ? 'text-amber-400' : 'text-emerald-400'
+                    }`}
+                  >
+                    {scan.totalFindings > 0 ? `${scan.totalFindings} findings` : 'Clean'}
+                  </span>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3.5 font-mono text-xs overflow-x-auto text-gray-300">
-            <div className="text-gray-600">// config/api.js: line 15</div>
-            <div className="text-red-400 mt-1 font-semibold">
-              - const STRIPE_SECRET = 'MOCK_STRIPE_SECRET_KEY_FOR_DEMO_ONLY';
-            </div>
-            <div className="text-emerald-400 mt-1 font-semibold">
-              + const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
-            </div>
-          </div>
-
-          <div className="text-sm text-gray-400 leading-relaxed">
-            <strong className="text-gray-300">Why it matters:</strong> Production payment keys or third-party API credentials committed to version control can be harvested by automated attackers, leading to account takeover or financial liability.
-          </div>
-
-          <div className="pt-2 flex items-center justify-between border-t border-gray-900 flex-wrap gap-2">
-            <span className="text-xs text-gray-500">
-              Confidence: <span className="text-gray-300 font-medium">High</span> • Status: <span className="text-emerald-400 font-medium">Open</span>
-            </span>
-            <span className="text-xs text-emerald-400 font-medium">
-              Automated Fix Proposal Ready →
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Limitations Section */}
-      <section className="bg-gray-900/50 border border-gray-800 rounded-xl p-6 sm:p-8">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="h-6 w-6 text-yellow-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h2 className="text-lg font-semibold text-gray-100">
-              Important Limitations & Disclaimer
-            </h2>
-            <p className="text-sm text-gray-400 mt-1 mb-4">
-              PatchPilot is designed as an automated first-line scanning tool to catch common pitfalls. We believe in being transparent about boundaries:
-            </p>
-            <ul className="space-y-2">
-              {limitations.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-sm text-gray-400">
-                  <span className="text-gray-600 font-bold">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+                  <ChevronRight className="hidden size-4 text-slate-600 sm:block" />
+                </Link>
+              ))
+            ) : (
+              <div className="py-12 text-center text-slate-500 text-sm">
+                <FileArchive className="size-8 mx-auto mb-2 text-slate-600" />
+                <p>No scans conducted yet in this workspace.</p>
+                <p className="text-xs text-slate-600 mt-1">Paste a GitHub link above or upload a project ZIP to begin.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
