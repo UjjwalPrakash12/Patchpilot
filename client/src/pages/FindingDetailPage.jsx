@@ -62,26 +62,26 @@ function getLanguageFromPath(filePath) {
 function getVerificationBadgeClasses(status) {
   switch (status) {
     case 'passed':
-      return 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      return 'bg-[#122372] text-[#DB9F75] border border-[#545748]';
     case 'failed':
-      return 'bg-red-500/20 text-red-400 border border-red-500/30';
+      return 'bg-[#3E2411] text-[#804012] border border-[#804012]';
     case 'inconclusive':
-      return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+      return 'bg-[#3E2411] text-[#DB9F75] border border-[#545748]';
     default:
-      return 'bg-gray-800 text-gray-400 border border-gray-700';
+      return 'bg-[#2F3A32] text-[#545748] border border-[#545748]';
   }
 }
 
 function getConfidenceBadgeClasses(confidence) {
   switch (confidence) {
     case 'high':
-      return 'bg-orange-500/20 text-orange-400 border border-orange-500/30';
+      return 'bg-[#3E2411] text-[#DB9F75] border border-[#804012]';
     case 'medium':
-      return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+      return 'bg-[#122372] text-[#DB9F75] border border-[#545748]';
     case 'low':
-      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+      return 'bg-[#2F3A32] text-[#545748] border border-[#545748]';
     default:
-      return 'bg-gray-800 text-gray-400 border border-gray-700';
+      return 'bg-[#2F3A32] text-[#545748] border border-[#545748]';
   }
 }
 
@@ -210,7 +210,7 @@ ${fixData.fixedCode}
     return (
       <div className="py-24 text-center">
         <LoadingSpinner size="lg" />
-        <p className="mt-4 text-sm text-gray-400">Loading finding details...</p>
+        <p className="mt-4 text-sm text-[#545748]">Loading finding details...</p>
       </div>
     );
   }
@@ -218,14 +218,14 @@ ${fixData.fixedCode}
   if (errorMessage || !finding) {
     return (
       <div className="py-16 px-4 max-w-xl mx-auto text-center">
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-gray-100">Finding Not Found</h2>
-          <p className="text-sm text-red-300 mt-2">{errorMessage || 'Unable to locate finding details.'}</p>
+        <div className="bg-[#3E2411] border border-[#804012] rounded-xl p-6">
+          <AlertTriangle className="h-12 w-12 text-[#804012] mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-[#DB9F75]">Finding Not Found</h2>
+          <p className="text-sm text-[#DB9F75]/80 mt-2">{errorMessage || 'Unable to locate finding details.'}</p>
           <div className="mt-6">
             <Link
               to="/history"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#122372] text-[#DB9F75] hover:bg-[#3E2411] border border-[#545748] rounded-lg transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Scans</span>
@@ -245,7 +245,7 @@ ${fixData.fixedCode}
       <div>
         <Link
           to={`/scan/${finding.scanId}`}
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#545748] hover:text-[#DB9F75] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Scan Report</span>
@@ -253,7 +253,7 @@ ${fixData.fixedCode}
       </div>
 
       {/* Main Finding Header Card */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-wrap">
             <SeverityBadge severity={finding.severity} className="text-xs px-2.5 py-1" />
@@ -270,12 +270,12 @@ ${fixData.fixedCode}
 
           {/* Status Dropdown */}
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <span className="text-xs text-gray-500 font-medium">Status:</span>
+            <span className="text-xs text-[#545748] font-medium">Status:</span>
             <select
               value={finding.status}
               disabled={isUpdatingStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="bg-gray-950 border border-gray-800 text-gray-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 disabled:opacity-50"
+              className="bg-[#3E2411] border border-[#545748] text-[#DB9F75] text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#DB9F75] disabled:opacity-50"
             >
               <option value="open">Open</option>
               <option value="accepted-risk">Accepted Risk</option>
@@ -287,17 +287,17 @@ ${fixData.fixedCode}
         </div>
 
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75]">
             {finding.title}
           </h1>
 
-          <div className="flex items-center gap-4 text-xs text-gray-400 mt-2 flex-wrap">
+          <div className="flex items-center gap-4 text-xs text-[#545748] mt-2 flex-wrap">
             {finding.filePath && (
-              <span className="flex items-center gap-1 font-mono text-gray-300">
-                <FileCode className="h-3.5 w-3.5 text-emerald-400" />
+              <span className="flex items-center gap-1 font-mono text-[#DB9F75]">
+                <FileCode className="h-3.5 w-3.5 text-[#DB9F75]" />
                 <span>{finding.filePath}</span>
                 {finding.startLine && (
-                  <span className="text-gray-500">
+                  <span className="text-[#545748]">
                     :L{finding.startLine}
                     {finding.endLine && finding.endLine !== finding.startLine ? `-${finding.endLine}` : ''}
                   </span>
@@ -306,14 +306,14 @@ ${fixData.fixedCode}
             )}
 
             {finding.ruleId && (
-              <span className="font-mono text-gray-500">
-                Rule ID: <span className="text-gray-400">{finding.ruleId}</span>
+              <span className="font-mono text-[#545748]">
+                Rule ID: <span className="text-[#DB9F75]">{finding.ruleId}</span>
               </span>
             )}
 
             {finding.scanner && (
-              <span className="text-gray-500">
-                Scanner: <span className="text-gray-400 font-medium">{finding.scanner}</span>
+              <span className="text-[#545748]">
+                Scanner: <span className="text-[#DB9F75] font-medium">{finding.scanner}</span>
               </span>
             )}
           </div>
@@ -322,20 +322,20 @@ ${fixData.fixedCode}
 
       {/* Evidence Code Snippet Card */}
       {displayEvidence && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-gray-800 flex items-center justify-between bg-gray-950/40">
+        <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
+          <div className="px-5 py-3.5 border-b border-[#545748] flex items-center justify-between bg-[#3E2411]">
             <div className="flex items-center gap-2">
-              <FileCode className="h-4 w-4 text-emerald-400" />
-              <h2 className="text-sm font-semibold text-gray-200">Evidence & Code Snippet</h2>
+              <FileCode className="h-4 w-4 text-[#DB9F75]" />
+              <h2 className="text-sm font-semibold text-[#DB9F75]">Evidence & Code Snippet</h2>
             </div>
             {finding.filePath && (
-              <span className="text-xs font-mono text-gray-500 truncate max-w-xs">
+              <span className="text-xs font-mono text-[#545748] truncate max-w-xs">
                 {finding.filePath}
               </span>
             )}
           </div>
 
-          <div className="p-4 bg-gray-950">
+          <div className="p-4 bg-[#3E2411]">
             <SyntaxHighlighter
               language={codeLang}
               style={vscDarkPlus}
@@ -356,12 +356,12 @@ ${fixData.fixedCode}
 
       {/* Description Card */}
       {finding.description && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center gap-2 text-gray-300">
-            <FileText className="h-4 w-4 text-emerald-400" />
+        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+          <div className="flex items-center gap-2 text-[#DB9F75]">
+            <FileText className="h-4 w-4 text-[#DB9F75]" />
             <h2 className="text-sm font-semibold">Description</h2>
           </div>
-          <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+          <p className="text-sm text-[#DB9F75]/90 leading-relaxed whitespace-pre-wrap">
             {finding.description}
           </p>
         </div>
@@ -369,12 +369,12 @@ ${fixData.fixedCode}
 
       {/* Impact Card */}
       {finding.impact && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center gap-2 text-gray-300">
-            <ShieldAlert className="h-4 w-4 text-orange-400" />
+        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+          <div className="flex items-center gap-2 text-[#DB9F75]">
+            <ShieldAlert className="h-4 w-4 text-[#804012]" />
             <h2 className="text-sm font-semibold">Security Impact</h2>
           </div>
-          <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+          <p className="text-sm text-[#DB9F75]/90 leading-relaxed whitespace-pre-wrap">
             {finding.impact}
           </p>
         </div>
@@ -382,26 +382,26 @@ ${fixData.fixedCode}
 
       {/* Remediation Instructions Card */}
       {finding.remediation && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-2">
-          <div className="flex items-center gap-2 text-gray-300">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
+        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-2 shadow-md">
+          <div className="flex items-center gap-2 text-[#DB9F75]">
+            <ShieldCheck className="h-4 w-4 text-[#DB9F75]" />
             <h2 className="text-sm font-semibold">Remediation Guidance</h2>
           </div>
-          <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+          <p className="text-sm text-[#DB9F75]/90 leading-relaxed whitespace-pre-wrap">
             {finding.remediation}
           </p>
         </div>
       )}
 
       {/* Generate Fix Proposal Section */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 space-y-4">
+      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 space-y-4 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-100 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-base font-semibold text-[#DB9F75] flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[#DB9F75]" />
               <span>Automated Fix Proposal</span>
             </h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-[#545748] mt-0.5">
               Generate remediation code snippet and downloadable patch tailored to this vulnerability.
             </p>
           </div>
@@ -409,16 +409,16 @@ ${fixData.fixedCode}
           <button
             onClick={handleGenerateFix}
             disabled={isGeneratingFix}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             {isGeneratingFix ? (
               <>
-                <LoadingSpinner size="sm" className="text-gray-950" />
+                <LoadingSpinner size="sm" className="text-[#122372]" />
                 <span>Generating Fix...</span>
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 text-gray-950" />
+                <Sparkles className="h-4 w-4 text-[#122372]" />
                 <span>{fixData ? 'Regenerate Fix' : 'Generate Fix'}</span>
               </>
             )}
@@ -426,19 +426,19 @@ ${fixData.fixedCode}
         </div>
 
         {fixError && (
-          <div className="p-3.5 rounded-lg bg-red-500/10 border border-red-500/30 text-xs text-red-300">
+          <div className="p-3.5 rounded-lg bg-[#3E2411] border border-[#804012] text-xs text-[#DB9F75]">
             {fixError}
           </div>
         )}
 
         {/* Fix Display */}
         {fixData && (
-          <div className="mt-4 space-y-4 pt-4 border-t border-gray-800">
+          <div className="mt-4 space-y-4 pt-4 border-t border-[#545748]">
             {/* Side-by-side or stacked diff: Original Code vs Fixed Code */}
             <div className="space-y-3">
               {fixData.originalCode && (
-                <div className="rounded-lg border border-red-500/30 bg-red-950/20 overflow-hidden">
-                  <div className="px-3.5 py-1.5 bg-red-500/10 border-b border-red-500/20 text-xs font-semibold text-red-400 flex items-center justify-between">
+                <div className="rounded-lg border border-[#804012] bg-[#3E2411] overflow-hidden">
+                  <div className="px-3.5 py-1.5 bg-[#804012]/30 border-b border-[#804012] text-xs font-semibold text-[#DB9F75] flex items-center justify-between">
                     <span>Original Code</span>
                     <span className="text-[10px] uppercase font-mono">Vulnerable</span>
                   </div>
@@ -459,8 +459,8 @@ ${fixData.fixedCode}
               )}
 
               {fixData.fixedCode && (
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 overflow-hidden">
-                  <div className="px-3.5 py-1.5 bg-emerald-500/10 border-b border-emerald-500/20 text-xs font-semibold text-emerald-400 flex items-center justify-between">
+                <div className="rounded-lg border border-[#545748] bg-[#122372] overflow-hidden">
+                  <div className="px-3.5 py-1.5 bg-[#3E2411] border-b border-[#545748] text-xs font-semibold text-[#DB9F75] flex items-center justify-between">
                     <span>Proposed Fixed Code</span>
                     <span className="text-[10px] uppercase font-mono">Remediated</span>
                   </div>
@@ -483,17 +483,17 @@ ${fixData.fixedCode}
 
             {/* Explanation & Risks */}
             {fixData.explanation && (
-              <div className="bg-gray-950 border border-gray-800 rounded-lg p-3.5 text-xs text-gray-300">
-                <strong className="text-emerald-400">Fix Explanation: </strong>
+              <div className="bg-[#3E2411] border border-[#545748] rounded-lg p-3.5 text-xs text-[#DB9F75]">
+                <strong className="text-[#DB9F75] font-semibold">Fix Explanation: </strong>
                 <span>{fixData.explanation}</span>
               </div>
             )}
 
             {fixData.risks && (
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3.5 text-xs text-yellow-300 flex items-start gap-2">
-                <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5 text-yellow-400" />
+              <div className="bg-[#3E2411] border border-[#804012] rounded-lg p-3.5 text-xs text-[#DB9F75] flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5 text-[#804012]" />
                 <div>
-                  <strong className="text-yellow-400">Implementation Considerations & Risks: </strong>
+                  <strong className="text-[#804012] font-semibold">Implementation Considerations & Risks: </strong>
                   <span>{fixData.risks}</span>
                 </div>
               </div>
@@ -504,12 +504,12 @@ ${fixData.fixedCode}
               <button
                 type="button"
                 onClick={handleCopyFix}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#3E2411] hover:bg-[#804012] text-[#DB9F75] border border-[#545748] transition-colors"
               >
                 {copied ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Copied to Clipboard!</span>
+                    <Check className="h-3.5 w-3.5 text-[#DB9F75]" />
+                    <span className="text-[#DB9F75]">Copied to Clipboard!</span>
                   </>
                 ) : (
                   <>
@@ -522,9 +522,9 @@ ${fixData.fixedCode}
               <button
                 type="button"
                 onClick={handleDownloadPatch}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-[#3E2411] hover:bg-[#804012] text-[#DB9F75] border border-[#545748] transition-colors"
               >
-                <Download className="h-3.5 w-3.5 text-emerald-400" />
+                <Download className="h-3.5 w-3.5 text-[#DB9F75]" />
                 <span>Download Patch (.txt)</span>
               </button>
             </div>
@@ -534,9 +534,9 @@ ${fixData.fixedCode}
 
       {/* External References Section */}
       {finding.references && finding.references.length > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
-            <ExternalLink className="h-4 w-4 text-emerald-400" />
+        <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-3 shadow-md">
+          <h2 className="text-sm font-semibold text-[#DB9F75] flex items-center gap-2">
+            <ExternalLink className="h-4 w-4 text-[#DB9F75]" />
             <span>References & Advisories</span>
           </h2>
           <ul className="space-y-1.5 text-xs">
@@ -546,7 +546,7 @@ ${fixData.fixedCode}
                   href={refUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-emerald-400 hover:underline flex items-center gap-1 truncate"
+                  className="text-[#DB9F75] hover:text-[#804012] underline flex items-center gap-1 truncate"
                 >
                   <span className="truncate">{refUrl}</span>
                   <ExternalLink className="h-3 w-3 flex-shrink-0" />

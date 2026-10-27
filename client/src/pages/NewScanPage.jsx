@@ -156,14 +156,14 @@ export default function NewScanPage() {
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-100">Start New Security Scan</h1>
-        <p className="mt-2 text-sm text-gray-400">
+        <h1 className="text-3xl font-extrabold text-[#DB9F75]">Start New Security Scan</h1>
+        <p className="mt-2 text-sm text-[#545748]">
           Upload your project files or link a public GitHub repository to run automated vulnerability checks.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden p-1 flex mb-6">
+      <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden p-1 flex mb-6">
         <button
           type="button"
           onClick={() => {
@@ -172,8 +172,8 @@ export default function NewScanPage() {
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === 'zip'
-              ? 'bg-gray-800 text-emerald-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-850'
+              ? 'bg-[#804012] text-[#DB9F75] shadow-sm'
+              : 'text-[#DB9F75]/70 hover:text-[#DB9F75] hover:bg-[#3E2411]'
           }`}
         >
           <FileArchive className="h-4 w-4" />
@@ -187,8 +187,8 @@ export default function NewScanPage() {
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === 'github'
-              ? 'bg-gray-800 text-emerald-400 shadow-sm'
-              : 'text-gray-400 hover:text-gray-200 hover:bg-gray-850'
+              ? 'bg-[#804012] text-[#DB9F75] shadow-sm'
+              : 'text-[#DB9F75]/70 hover:text-[#DB9F75] hover:bg-[#3E2411]'
           }`}
         >
           <Github className="h-4 w-4" />
@@ -198,15 +198,15 @@ export default function NewScanPage() {
 
       {/* Error Message Banner */}
       {errorMessage && (
-        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start justify-between gap-3">
-          <div className="flex items-start gap-2.5 text-red-400 text-sm">
-            <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+        <div className="mb-6 p-4 rounded-lg bg-[#3E2411] border border-[#804012] flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2.5 text-[#DB9F75] text-sm">
+            <AlertCircle className="h-5 w-5 text-[#804012] flex-shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setErrorMessage(null)}
-            className="text-gray-500 hover:text-gray-300"
+            className="text-[#545748] hover:text-[#DB9F75]"
           >
             <X className="h-4 w-4" />
           </button>
@@ -214,11 +214,11 @@ export default function NewScanPage() {
       )}
 
       {/* Tab Panels */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 sm:p-8">
+      <div className="bg-[#122372] border border-[#545748] rounded-xl p-6 sm:p-8 shadow-xl">
         {activeTab === 'zip' ? (
           <form onSubmit={handleZipSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-200 mb-2">
+              <label className="block text-sm font-medium text-[#DB9F75] mb-2">
                 Project Source Archive (.zip)
               </label>
 
@@ -230,10 +230,10 @@ export default function NewScanPage() {
                 onClick={() => fileInputRef.current?.click()}
                 className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
                   isDragging
-                    ? 'border-emerald-500 bg-emerald-500/5'
+                    ? 'border-[#DB9F75] bg-[#3E2411]'
                     : selectedFile
-                    ? 'border-emerald-500/50 bg-gray-950/60'
-                    : 'border-gray-800 hover:border-gray-700 bg-gray-950/40'
+                    ? 'border-[#DB9F75]/60 bg-[#3E2411]'
+                    : 'border-[#545748] hover:border-[#DB9F75] bg-[#3E2411]'
                 }`}
               >
                 <input
@@ -245,16 +245,16 @@ export default function NewScanPage() {
                 />
 
                 {selectedFile ? (
-                  <div className="flex items-center justify-between bg-gray-900 border border-gray-800 rounded-lg p-4 text-left">
+                  <div className="flex items-center justify-between bg-[#122372] border border-[#545748] rounded-lg p-4 text-left">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                      <div className="p-2.5 rounded-lg bg-[#3E2411] text-[#DB9F75] border border-[#545748]">
                         <FileCode2 className="h-6 w-6" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-100 truncate">
+                        <p className="text-sm font-semibold text-[#DB9F75] truncate">
                           {selectedFile.name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-[#545748]">
                           {formatBytes(selectedFile.size)}
                         </p>
                       </div>
@@ -262,7 +262,7 @@ export default function NewScanPage() {
                     <button
                       type="button"
                       onClick={handleClearFile}
-                      className="p-1.5 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-md transition-colors"
+                      className="p-1.5 text-[#545748] hover:text-[#DB9F75] hover:bg-[#3E2411] rounded-md transition-colors"
                       title="Remove file"
                     >
                       <X className="h-4 w-4" />
@@ -270,14 +270,14 @@ export default function NewScanPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="mx-auto w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-emerald-400">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-[#3E2411] border border-[#545748] flex items-center justify-center text-[#DB9F75]">
                       <UploadCloud className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-200">
-                        <span className="text-emerald-400 underline decoration-dotted underline-offset-4">Click to browse</span> or drag and drop your ZIP file here
+                      <p className="text-sm font-medium text-[#DB9F75]">
+                        <span className="text-[#DB9F75] underline decoration-dotted underline-offset-4 font-semibold">Click to browse</span> or drag and drop your ZIP file here
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[#545748] mt-1">
                         Supported archive: .zip (Max size: 50MB)
                       </p>
                     </div>
@@ -286,8 +286,8 @@ export default function NewScanPage() {
               </div>
             </div>
 
-            <div className="bg-gray-950/60 border border-gray-800/80 rounded-lg p-3 text-xs text-gray-400 flex items-center gap-2">
-              <ShieldAlert className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+            <div className="bg-[#3E2411] border border-[#545748] rounded-lg p-3 text-xs text-[#545748] flex items-center gap-2">
+              <ShieldAlert className="h-4 w-4 text-[#804012] flex-shrink-0" />
               <span>
                 Files are extracted in an isolated sandbox, scanned in-memory, and automatically deleted after processing.
               </span>
@@ -296,11 +296,11 @@ export default function NewScanPage() {
             <button
               type="submit"
               disabled={isLoading || !selectedFile}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {isLoading ? (
                 <>
-                  <LoadingSpinner size="sm" className="text-gray-950" />
+                  <LoadingSpinner size="sm" className="text-[#122372]" />
                   <span>Uploading & Queuing Scan...</span>
                 </>
               ) : (
@@ -314,11 +314,11 @@ export default function NewScanPage() {
         ) : (
           <form onSubmit={handleGithubSubmit} className="space-y-6">
             <div>
-              <label htmlFor="githubUrl" className="block text-sm font-medium text-gray-200 mb-2">
+              <label htmlFor="githubUrl" className="block text-sm font-medium text-[#DB9F75] mb-2">
                 Public GitHub Repository URL
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#545748]">
                   <Github className="h-5 w-5" />
                 </div>
                 <input
@@ -331,29 +331,29 @@ export default function NewScanPage() {
                     if (!urlTouched) setUrlTouched(true);
                   }}
                   onBlur={() => setUrlTouched(true)}
-                  className={`w-full bg-gray-950 border rounded-lg pl-11 pr-4 py-3 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:ring-1 transition-colors ${
+                  className={`w-full bg-[#3E2411] border rounded-lg pl-11 pr-4 py-3 text-sm text-[#DB9F75] placeholder-[#545748] focus:outline-none focus:ring-1 transition-colors ${
                     githubError
-                      ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500'
-                      : 'border-gray-800 focus:border-emerald-500 focus:ring-emerald-500'
+                      ? 'border-[#804012] focus:border-[#804012] focus:ring-[#804012]'
+                      : 'border-[#545748] focus:border-[#DB9F75] focus:ring-[#DB9F75]'
                   }`}
                 />
               </div>
 
               {githubError && (
-                <p className="mt-2 text-xs text-red-400 flex items-center gap-1">
+                <p className="mt-2 text-xs text-[#804012] flex items-center gap-1">
                   <AlertCircle className="h-3.5 w-3.5" />
                   <span>{githubError}</span>
                 </p>
               )}
 
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-[#545748]">
                 Only public repositories are currently supported. Enter the full URL, for example:{' '}
-                <span className="font-mono text-gray-400">https://github.com/facebook/react</span>
+                <span className="font-mono text-[#DB9F75]">https://github.com/facebook/react</span>
               </p>
             </div>
 
-            <div className="bg-gray-950/60 border border-gray-800/80 rounded-lg p-3 text-xs text-gray-400 flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+            <div className="bg-[#3E2411] border border-[#545748] rounded-lg p-3 text-xs text-[#545748] flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-[#DB9F75] flex-shrink-0" />
               <span>
                 PatchPilot will perform a shallow clone (depth 1) of the default branch and inspect project files.
               </span>
@@ -362,11 +362,11 @@ export default function NewScanPage() {
             <button
               type="submit"
               disabled={isLoading || !githubUrl.trim() || !isGithubValid}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
             >
               {isLoading ? (
                 <>
-                  <LoadingSpinner size="sm" className="text-gray-950" />
+                  <LoadingSpinner size="sm" className="text-[#122372]" />
                   <span>Cloning & Queuing Scan...</span>
                 </>
               ) : (

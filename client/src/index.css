@@ -1,25 +1,48 @@
 @import 'tailwindcss';
 
-/* Custom scrollbar for dark theme */
+@theme {
+  --color-brand-navy: #122372;
+  --color-brand-forest: #2F3A32;
+  --color-brand-sage: #545748;
+  --color-brand-peach: #DB9F75;
+  --color-brand-rust: #804012;
+  --color-brand-espresso: #3E2411;
+}
+
+:root {
+  background-color: #2F3A32;
+  color: #DB9F75;
+}
+
+body {
+  background-color: #2F3A32;
+  color: #DB9F75;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar matching the 6-color palette */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a2e;
+  background: #2F3A32;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4a4a6a;
+  background: #122372;
+  border: 1px solid #545748;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a7a;
+  background: #804012;
 }
 
-/* Pulse animation for scan status */
+/* Pulse animation */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }

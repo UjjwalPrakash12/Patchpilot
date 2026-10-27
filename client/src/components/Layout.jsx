@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Plus, History, Code2, ExternalLink } from 'lucide-react';
+import { ShieldCheck, ExternalLink } from 'lucide-react';
 
 export default function Layout() {
   const location = useLocation();
@@ -11,22 +11,19 @@ export default function Layout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0b0d10] text-stone-100 selection:bg-blue-500/30 flex flex-col font-sans">
-      {/* Background radial glow */}
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_76%_4%,rgba(37,99,235,0.12),transparent_28%),radial-gradient(circle_at_8%_38%,rgba(16,185,129,0.05),transparent_22%)]" />
-
-      {/* Top Navigation */}
-      <header className="relative border-b border-white/[0.08] bg-[#0b0d10]/90 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen bg-[#2F3A32] text-[#DB9F75] flex flex-col font-sans selection:bg-[#804012] selection:text-[#DB9F75]">
+      {/* Top Navigation Bar */}
+      <header className="border-b border-[#545748]/50 bg-[#122372]/95 backdrop-blur-md sticky top-0 z-50 shadow-md">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="grid size-9 place-items-center rounded-sm border border-blue-400/30 bg-blue-400/10 text-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.18)] transition group-hover:border-blue-400/50">
-              <ShieldCheck className="size-5" />
+            <div className="grid size-9 place-items-center rounded-sm border border-[#804012] bg-[#3E2411] text-[#DB9F75] shadow-sm transition group-hover:border-[#DB9F75]">
+              <ShieldCheck className="size-5 text-[#DB9F75]" />
             </div>
             <div>
-              <p className="text-sm font-semibold tracking-wide text-white flex items-center gap-1">
-                PatchPilot<span className="text-blue-400 text-xs">.engine</span>
+              <p className="text-sm font-semibold tracking-wide text-[#DB9F75] flex items-center gap-1">
+                PatchPilot<span className="text-[#804012] text-xs">.engine</span>
               </p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-500">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#545748]">
                 Security Scanner & Fix Assistant
               </p>
             </div>
@@ -41,7 +38,7 @@ export default function Layout() {
                   key={to}
                   to={to}
                   className={`transition-colors font-medium ${
-                    isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'
+                    isActive ? 'text-[#DB9F75] font-semibold border-b-2 border-[#DB9F75] pb-0.5' : 'text-[#DB9F75]/70 hover:text-[#DB9F75]'
                   }`}
                 >
                   {label}
@@ -50,17 +47,17 @@ export default function Layout() {
             })}
           </div>
 
-          {/* Right Controls */}
+          {/* Right Status & Workspace */}
           <div className="flex items-center gap-3">
-            <span className="hidden items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/[0.06] px-3 py-1.5 text-xs text-emerald-400 sm:flex">
-              <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+            <span className="hidden items-center gap-2 rounded-full border border-[#545748] bg-[#3E2411] px-3 py-1.5 text-xs text-[#DB9F75] sm:flex">
+              <span className="size-1.5 rounded-full bg-[#DB9F75] animate-pulse" />
               Engine active
             </span>
 
             <Link
               to="/history"
               title="Workspace (Ujjwal Prakash)"
-              className="grid size-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:bg-white/[0.08]"
+              className="grid size-9 place-items-center rounded-full border border-[#804012] bg-[#3E2411] text-xs font-semibold text-[#DB9F75] transition hover:bg-[#804012]"
               aria-label="Developer Workspace"
             >
               UP
@@ -69,30 +66,30 @@ export default function Layout() {
         </nav>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 relative">
+      {/* Main Page Area */}
+      <main className="flex-1">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="relative border-t border-white/[0.07] bg-[#090b0e] text-xs text-slate-500 py-8">
+      <footer className="border-t border-[#545748]/50 bg-[#122372] text-xs text-[#545748] py-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="size-4 text-blue-400" />
+          <div className="flex items-center gap-2 text-[#DB9F75]/80">
+            <ShieldCheck className="size-4 text-[#804012]" />
             <span>PatchPilot · End-Term Software Engineering Project by Ujjwal Prakash</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link to="/history" className="hover:text-slate-300 transition-colors">
+            <Link to="/history" className="text-[#545748] hover:text-[#DB9F75] transition-colors">
               Scan History
             </Link>
-            <Link to="/scan/new" className="hover:text-slate-300 transition-colors">
+            <Link to="/scan/new" className="text-[#545748] hover:text-[#DB9F75] transition-colors">
               New Scan
             </Link>
             <a
               href="https://github.com/ujjwalprakash"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-slate-300 transition-colors flex items-center gap-1"
+              className="text-[#545748] hover:text-[#DB9F75] transition-colors flex items-center gap-1"
             >
               <span>GitHub</span>
               <ExternalLink className="size-3" />

@@ -68,13 +68,13 @@ export default function HistoryPage() {
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#545748]/50 pb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-100 flex items-center gap-3">
-            <History className="h-7 w-7 text-emerald-400" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75] flex items-center gap-3">
+            <History className="h-7 w-7 text-[#DB9F75]" />
             <span>Scan History</span>
           </h1>
-          <p className="mt-1 text-sm text-gray-400">
+          <p className="mt-1 text-sm text-[#545748]">
             Review past security scans, monitor vulnerability trends, and revisit remediation reports.
           </p>
         </div>
@@ -82,7 +82,7 @@ export default function HistoryPage() {
         <div>
           <Link
             to="/scan/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors shadow-md border border-[#DB9F75]"
           >
             <Plus className="h-4 w-4" />
             <span>New Scan</span>
@@ -92,13 +92,13 @@ export default function HistoryPage() {
 
       {/* Error state */}
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-[#3E2411] border border-[#804012] flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-[#804012] flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-red-300">{errorMessage}</p>
+            <p className="text-sm font-medium text-[#DB9F75]">{errorMessage}</p>
             <button
               onClick={fetchScans}
-              className="mt-2 text-xs font-semibold text-red-400 hover:underline"
+              className="mt-2 text-xs font-semibold text-[#DB9F75] hover:underline"
             >
               Retry loading
             </button>
@@ -110,10 +110,10 @@ export default function HistoryPage() {
       {isLoading ? (
         <div className="py-24 text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-sm text-gray-400">Loading your scan history...</p>
+          <p className="mt-4 text-sm text-[#545748]">Loading your scan history...</p>
         </div>
       ) : scans.length === 0 ? (
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-12 text-center">
+        <div className="bg-[#122372] border border-[#545748] rounded-2xl p-12 text-center shadow-lg">
           <EmptyState
             icon={Shield}
             title="No Scans Yet"
@@ -121,7 +121,7 @@ export default function HistoryPage() {
             action={
               <Link
                 to="/scan/new"
-                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-gray-950 bg-emerald-400 hover:bg-emerald-300 transition-colors"
+                className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-[#122372] bg-[#DB9F75] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors border border-[#DB9F75]"
               >
                 <Plus className="h-4 w-4" />
                 <span>Start Your First Scan</span>
@@ -130,10 +130,10 @@ export default function HistoryPage() {
           />
         </div>
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-[#122372] border border-[#545748] rounded-xl overflow-hidden shadow-lg">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gray-950/60 border-b border-gray-800 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <thead className="bg-[#3E2411] border-b border-[#545748] text-xs font-semibold text-[#545748] uppercase tracking-wider">
                 <tr>
                   <th scope="col" className="px-6 py-4">Project</th>
                   <th scope="col" className="px-6 py-4">Type</th>
@@ -143,27 +143,27 @@ export default function HistoryPage() {
                   <th scope="col" className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800 text-gray-300">
+              <tbody className="divide-y divide-[#545748]/40 text-[#DB9F75]">
                 {scans.map((scan) => {
                   const isZip = scan.submissionType === 'zip';
 
                   return (
                     <tr
                       key={scan.scanId}
-                      className="hover:bg-gray-850/50 transition-colors group cursor-pointer"
+                      className="hover:bg-[#3E2411] transition-colors group cursor-pointer"
                       onClick={() => navigate(`/scan/${scan.scanId}`)}
                     >
                       {/* Project Name & Link */}
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-gray-100 group-hover:text-emerald-400 transition-colors">
+                        <div className="font-semibold text-[#DB9F75] group-hover:text-[#DB9F75] transition-colors">
                           {scan.projectName || 'Untitled Project'}
                         </div>
                         {scan.repositoryUrl ? (
-                          <div className="text-xs text-gray-500 font-mono truncate max-w-xs mt-0.5">
+                          <div className="text-xs text-[#545748] font-mono truncate max-w-xs mt-0.5">
                             {scan.repositoryUrl.replace('https://github.com/', '')}
                           </div>
                         ) : (
-                          <div className="text-xs text-gray-600 font-mono mt-0.5">
+                          <div className="text-xs text-[#545748] font-mono mt-0.5">
                             ID: {scan.scanId.slice(0, 8)}...
                           </div>
                         )}
@@ -171,15 +171,15 @@ export default function HistoryPage() {
 
                       {/* Type Badge */}
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-gray-950 border border-gray-800 text-gray-300">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-[#3E2411] border border-[#545748] text-[#DB9F75]">
                           {isZip ? (
                             <>
-                              <FileArchive className="h-3.5 w-3.5 text-gray-400" />
+                              <FileArchive className="h-3.5 w-3.5 text-[#545748]" />
                               <span>ZIP</span>
                             </>
                           ) : (
                             <>
-                              <Github className="h-3.5 w-3.5 text-gray-400" />
+                              <Github className="h-3.5 w-3.5 text-[#545748]" />
                               <span>GitHub</span>
                             </>
                           )}
@@ -199,24 +199,24 @@ export default function HistoryPage() {
                           <div className="flex items-center gap-2">
                             <span
                               className={`font-semibold font-mono text-sm ${
-                                scan.totalFindings > 0 ? 'text-orange-400' : 'text-emerald-400'
+                                scan.totalFindings > 0 ? 'text-[#804012]' : 'text-[#DB9F75]'
                               }`}
                             >
                               {scan.totalFindings ?? 0}
                             </span>
                             {scan.criticalCount > 0 && (
-                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#804012]/30 border border-[#804012] text-[#DB9F75]">
                                 {scan.criticalCount} crit
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className="text-xs text-gray-500 font-mono">—</span>
+                          <span className="text-xs text-[#545748] font-mono">—</span>
                         )}
                       </td>
 
                       {/* Date */}
-                      <td className="px-6 py-4 text-xs text-gray-400 whitespace-nowrap">
+                      <td className="px-6 py-4 text-xs text-[#545748] whitespace-nowrap">
                         {formatDate(scan.createdAt)}
                       </td>
 
@@ -227,16 +227,16 @@ export default function HistoryPage() {
                       >
                         <Link
                           to={`/scan/${scan.scanId}`}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-200 hover:bg-gray-700 hover:text-emerald-400 transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#3E2411] text-[#DB9F75] hover:bg-[#804012] border border-[#545748] transition-colors"
                         >
-                          <Eye className="h-3.5 w-3.5" />
+                          <Eye className="h-3.5 w-3.5 text-[#DB9F75]" />
                           <span>View</span>
                         </Link>
 
                         <button
                           type="button"
                           onClick={() => setScanToDelete(scan)}
-                          className="inline-flex items-center gap-1 p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                          className="inline-flex items-center gap-1 p-1.5 rounded-lg text-[#545748] hover:text-[#804012] hover:bg-[#3E2411] transition-colors"
                           title="Delete Scan"
                         >
                           <Trash2 className="h-4 w-4" />

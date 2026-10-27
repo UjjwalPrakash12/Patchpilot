@@ -207,7 +207,7 @@ export default function ScanPage() {
     return (
       <div className="py-24 text-center">
         <LoadingSpinner size="lg" />
-        <p className="mt-4 text-sm text-gray-400">Loading scan report...</p>
+        <p className="mt-4 text-sm text-[#545748]">Loading scan report...</p>
       </div>
     );
   }
@@ -215,20 +215,20 @@ export default function ScanPage() {
   if (scanError && !scan) {
     return (
       <div className="py-16 px-4 max-w-xl mx-auto text-center">
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-          <AlertOctagon className="h-12 w-12 text-red-400 mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-gray-100">Unable to Load Scan</h2>
-          <p className="text-sm text-red-300 mt-2">{scanError}</p>
+        <div className="bg-[#3E2411] border border-[#804012] rounded-xl p-6">
+          <AlertOctagon className="h-12 w-12 text-[#804012] mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-[#DB9F75]">Unable to Load Scan</h2>
+          <p className="text-sm text-[#DB9F75]/80 mt-2">{scanError}</p>
           <div className="mt-6 flex justify-center gap-3">
             <Link
               to="/history"
-              className="px-4 py-2 text-sm font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-[#122372] text-[#DB9F75] hover:bg-[#3E2411] border border-[#545748] rounded-lg transition-colors"
             >
               Scan History
             </Link>
             <Link
               to="/scan/new"
-              className="px-4 py-2 text-sm font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/30 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-[#DB9F75] text-[#122372] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] rounded-lg transition-colors"
             >
               New Scan
             </Link>
@@ -245,36 +245,36 @@ export default function ScanPage() {
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       {/* Top Header / Breadcrumb & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#545748]/50 pb-6">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <Link
               to="/history"
-              className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-[#545748] hover:text-[#DB9F75] transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span>Back to Scan History</span>
             </Link>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-100">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75]">
               {scan?.projectName || 'Security Scan'}
             </h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-gray-900 border border-gray-800 text-gray-300">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-[#122372] border border-[#545748] text-[#DB9F75]">
               {scan?.submissionType === 'github' ? (
                 <>
-                  <Github className="h-3.5 w-3.5 text-gray-400" />
+                  <Github className="h-3.5 w-3.5 text-[#545748]" />
                   <span>GitHub</span>
                 </>
               ) : (
                 <>
-                  <FileArchive className="h-3.5 w-3.5 text-gray-400" />
+                  <FileArchive className="h-3.5 w-3.5 text-[#545748]" />
                   <span>ZIP Archive</span>
                 </>
               )}
             </span>
           </div>
-          <div className="flex items-center gap-4 text-xs text-gray-500 mt-2 flex-wrap">
+          <div className="flex items-center gap-4 text-xs text-[#545748] mt-2 flex-wrap">
             <span className="flex items-center gap-1">
               <Calendar className="h-3.5 w-3.5" />
               <span>Created: {formatDate(scan?.createdAt)}</span>
@@ -290,7 +290,7 @@ export default function ScanPage() {
                 href={scan.repositoryUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-emerald-400 hover:underline"
+                className="flex items-center gap-1 text-[#DB9F75] hover:underline"
               >
                 <span>Repo Link</span>
                 <ExternalLink className="h-3 w-3" />
@@ -305,13 +305,13 @@ export default function ScanPage() {
             <button
               onClick={handleExport}
               disabled={isExporting}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-gray-900 text-gray-200 border border-gray-800 hover:border-gray-700 hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-[#122372] text-[#DB9F75] border border-[#545748] hover:bg-[#3E2411] transition-colors disabled:opacity-50"
               title="Download full JSON report"
             >
               {isExporting ? (
                 <LoadingSpinner size="sm" />
               ) : (
-                <Download className="h-4 w-4 text-emerald-400" />
+                <Download className="h-4 w-4 text-[#DB9F75]" />
               )}
               <span>Export Report</span>
             </button>
@@ -319,7 +319,7 @@ export default function ScanPage() {
 
           <Link
             to="/scan/new"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold bg-[#DB9F75] text-[#122372] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] transition-colors shadow-sm"
           >
             <Plus className="h-4 w-4" />
             <span>New Scan</span>
@@ -329,7 +329,7 @@ export default function ScanPage() {
             <button
               onClick={handleRescan}
               disabled={isRescanning}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-gray-900 text-gray-400 border border-gray-800 hover:text-gray-200 hover:bg-gray-800 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-[#122372] text-[#DB9F75] border border-[#545748] hover:bg-[#3E2411] transition-colors disabled:opacity-50"
               title="Rerun scanners against codebase"
             >
               <RefreshCw className={`h-4 w-4 ${isRescanning ? 'animate-spin' : ''}`} />
@@ -339,7 +339,7 @@ export default function ScanPage() {
 
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-gray-900 text-red-400 border border-gray-800 hover:bg-red-500/10 hover:border-red-500/30 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-[#3E2411] text-[#804012] border border-[#804012] hover:bg-[#804012] hover:text-[#DB9F75] transition-colors"
             title="Delete this scan"
           >
             <Trash2 className="h-4 w-4" />
@@ -350,19 +350,19 @@ export default function ScanPage() {
       {/* 1. STATE: SCANNING IN PROGRESS */}
       {isRunning && (
         <div className="space-y-6">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 sm:p-8 text-center space-y-4">
+          <div className="bg-[#122372] border border-[#545748] rounded-2xl p-6 sm:p-8 text-center space-y-4 shadow-xl">
             <div className="flex justify-center">
               <ScanStatusIndicator status={scan.status} className="text-lg" />
             </div>
-            <p className="text-sm text-gray-400 max-w-md mx-auto">
+            <p className="text-sm text-[#545748] max-w-md mx-auto">
               Scanning your project codebase. Results will update dynamically as each scanner completes its run.
             </p>
           </div>
 
           {/* Scanner Status Cards */}
           <div className="space-y-3">
-            <h3 className="text-base font-semibold text-gray-200 flex items-center gap-2">
-              <Layers className="h-4 w-4 text-emerald-400" />
+            <h3 className="text-base font-semibold text-[#DB9F75] flex items-center gap-2">
+              <Layers className="h-4 w-4 text-[#DB9F75]" />
               <span>Multi-Scanner Pipeline Status</span>
             </h3>
 
@@ -376,12 +376,12 @@ export default function ScanPage() {
                   return (
                     <div
                       key={scannerKey}
-                      className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between"
+                      className="bg-[#122372] border border-[#545748] rounded-xl p-4 flex items-center justify-between shadow-sm"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-200 truncate">{label}</p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Findings: <span className="text-gray-300 font-mono">{findingCount}</span>
+                        <p className="text-sm font-medium text-[#DB9F75] truncate">{label}</p>
+                        <p className="text-xs text-[#545748] mt-0.5">
+                          Findings: <span className="text-[#DB9F75] font-mono">{findingCount}</span>
                         </p>
                       </div>
                       <span className={getStatusBadge(scannerStatus)}>
@@ -397,26 +397,26 @@ export default function ScanPage() {
 
       {/* 2. STATE: SCAN FAILED */}
       {isFailed && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 sm:p-8 space-y-4">
+        <div className="bg-[#3E2411] border border-[#804012] rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
           <div className="flex items-start gap-3">
-            <XCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
+            <XCircle className="h-6 w-6 text-[#804012] flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-100">Scan Execution Failed</h2>
-              <p className="text-sm text-red-300 mt-1">
+              <h2 className="text-lg font-semibold text-[#DB9F75]">Scan Execution Failed</h2>
+              <p className="text-sm text-[#DB9F75]/80 mt-1">
                 {scan?.errorMessage || 'An error occurred during archive extraction or scanner execution.'}
               </p>
               <div className="mt-6 flex items-center gap-3">
                 <button
                   onClick={handleRescan}
                   disabled={isRescanning}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-500/30 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#DB9F75] text-[#122372] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] transition-colors shadow-sm"
                 >
                   <RefreshCw className={`h-4 w-4 ${isRescanning ? 'animate-spin' : ''}`} />
                   <span>Retry Scan</span>
                 </button>
                 <Link
                   to="/scan/new"
-                  className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800 transition-colors"
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-[#122372] text-[#DB9F75] hover:bg-[#3E2411] border border-[#545748] transition-colors"
                 >
                   New Scan
                 </Link>
@@ -431,100 +431,100 @@ export default function ScanPage() {
         <div className="space-y-8">
           {/* Summary Cards Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Issues</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-gray-100 mt-2 font-mono">
+            <div className="bg-[#122372] border border-[#545748] rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#545748] uppercase tracking-wider">Total Issues</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75] mt-2 font-mono">
                 {totalFindingsCount}
               </p>
             </div>
-            <div className="bg-gray-900 border border-red-500/20 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-red-400 uppercase tracking-wider">Critical</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-red-400 mt-2 font-mono">
+            <div className="bg-[#3E2411] border border-[#804012] rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#804012] uppercase tracking-wider">Critical</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#804012] mt-2 font-mono">
                 {criticalCount}
               </p>
             </div>
-            <div className="bg-gray-900 border border-orange-500/20 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-orange-400 uppercase tracking-wider">High</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-orange-400 mt-2 font-mono">
+            <div className="bg-[#3E2411] border border-[#804012]/60 rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#804012] uppercase tracking-wider">High</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#804012] mt-2 font-mono">
                 {highCount}
               </p>
             </div>
-            <div className="bg-gray-900 border border-yellow-500/20 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-yellow-400 uppercase tracking-wider">Medium</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-yellow-400 mt-2 font-mono">
+            <div className="bg-[#122372] border border-[#545748] rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#DB9F75] uppercase tracking-wider">Medium</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75] mt-2 font-mono">
                 {mediumCount}
               </p>
             </div>
-            <div className="bg-gray-900 border border-blue-500/20 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-blue-400 uppercase tracking-wider">Low</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-blue-400 mt-2 font-mono">
+            <div className="bg-[#122372] border border-[#545748]/50 rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#545748] uppercase tracking-wider">Low</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#DB9F75] mt-2 font-mono">
                 {lowCount}
               </p>
             </div>
-            <div className="bg-gray-900 border border-gray-700 rounded-xl p-4 text-center">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Info</p>
-              <p className="text-2xl sm:text-3xl font-extrabold text-gray-400 mt-2 font-mono">
+            <div className="bg-[#122372] border border-[#545748]/30 rounded-xl p-4 text-center shadow-md">
+              <p className="text-xs font-medium text-[#545748] uppercase tracking-wider">Info</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-[#545748] mt-2 font-mono">
                 {infoCount}
               </p>
             </div>
           </div>
 
           {/* Severity Distribution Bar */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-3">
-            <div className="flex items-center justify-between text-xs text-gray-400">
-              <span className="font-semibold text-gray-300">Severity Distribution</span>
+          <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-3 shadow-md">
+            <div className="flex items-center justify-between text-xs text-[#545748]">
+              <span className="font-semibold text-[#DB9F75]">Severity Distribution</span>
               <span>{totalFindingsCount} Total Findings</span>
             </div>
 
             {totalFindingsCount > 0 && distributionPercents ? (
-              <div className="w-full h-3 rounded-full overflow-hidden flex bg-gray-950 border border-gray-800">
+              <div className="w-full h-3 rounded-full overflow-hidden flex bg-[#3E2411] border border-[#545748]">
                 {distributionPercents.critical > 0 && (
                   <div
-                    className="bg-red-500 transition-all"
+                    className="bg-[#804012] transition-all"
                     style={{ width: `${distributionPercents.critical}%` }}
                     title={`Critical: ${criticalCount}`}
                   />
                 )}
                 {distributionPercents.high > 0 && (
                   <div
-                    className="bg-orange-500 transition-all"
+                    className="bg-[#804012]/80 transition-all"
                     style={{ width: `${distributionPercents.high}%` }}
                     title={`High: ${highCount}`}
                   />
                 )}
                 {distributionPercents.medium > 0 && (
                   <div
-                    className="bg-yellow-400 transition-all"
+                    className="bg-[#DB9F75] transition-all"
                     style={{ width: `${distributionPercents.medium}%` }}
                     title={`Medium: ${mediumCount}`}
                   />
                 )}
                 {distributionPercents.low > 0 && (
                   <div
-                    className="bg-blue-400 transition-all"
+                    className="bg-[#545748] transition-all"
                     style={{ width: `${distributionPercents.low}%` }}
                     title={`Low: ${lowCount}`}
                   />
                 )}
                 {distributionPercents.info > 0 && (
                   <div
-                    className="bg-gray-500 transition-all"
+                    className="bg-[#545748]/60 transition-all"
                     style={{ width: `${distributionPercents.info}%` }}
                     title={`Info: ${infoCount}`}
                   />
                 )}
               </div>
             ) : (
-              <div className="w-full h-3 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
-                <span className="text-[10px] text-emerald-400 font-semibold">Zero Vulnerabilities</span>
+              <div className="w-full h-3 rounded-full bg-[#3E2411] border border-[#DB9F75]/40 flex items-center justify-center">
+                <span className="text-[10px] text-[#DB9F75] font-semibold">Zero Vulnerabilities</span>
               </div>
             )}
           </div>
 
           {/* Scanner Coverage Section */}
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
-            <h3 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
-              <Layers className="h-4 w-4 text-emerald-400" />
+          <div className="bg-[#122372] border border-[#545748] rounded-xl p-5 space-y-4 shadow-md">
+            <h3 className="text-sm font-semibold text-[#DB9F75] flex items-center gap-2">
+              <Layers className="h-4 w-4 text-[#DB9F75]" />
               <span>Scanner Coverage & Engine Results</span>
             </h3>
 
@@ -533,13 +533,13 @@ export default function ScanPage() {
                 Object.entries(scan.scannerResults).map(([key, val]) => (
                   <div
                     key={key}
-                    className="bg-gray-950 border border-gray-800 rounded-lg p-3.5 flex items-center justify-between"
+                    className="bg-[#3E2411] border border-[#545748] rounded-lg p-3.5 flex items-center justify-between shadow-sm"
                   >
                     <div>
-                      <p className="text-xs font-semibold text-gray-200">
+                      <p className="text-xs font-semibold text-[#DB9F75]">
                         {SCANNER_LABELS[key] || key}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-[#545748] mt-0.5">
                         {val?.findingCount ?? 0} {val?.findingCount === 1 ? 'issue' : 'issues'} found
                       </p>
                     </div>
@@ -553,10 +553,10 @@ export default function ScanPage() {
 
           {/* Findings Filter Bar & List */}
           <div className="space-y-4">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-[#122372] border border-[#545748] rounded-xl p-4 shadow-md">
               {/* Search */}
               <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#545748]">
                   <Search className="h-4 w-4" />
                 </div>
                 <input
@@ -564,7 +564,7 @@ export default function ScanPage() {
                   placeholder="Filter findings by title, rule, or file path..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-950 border border-gray-800 rounded-lg pl-9 pr-4 py-2 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-[#3E2411] border border-[#545748] rounded-lg pl-9 pr-4 py-2 text-xs text-[#DB9F75] placeholder-[#545748] focus:outline-none focus:border-[#DB9F75]"
                 />
               </div>
 
@@ -573,7 +573,7 @@ export default function ScanPage() {
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value)}
-                  className="bg-gray-950 border border-gray-800 text-gray-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500"
+                  className="bg-[#3E2411] border border-[#545748] text-[#DB9F75] text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-[#DB9F75]"
                 >
                   <option value="">All Severities</option>
                   <option value="critical">Critical</option>
@@ -586,7 +586,7 @@ export default function ScanPage() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="bg-gray-950 border border-gray-800 text-gray-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500"
+                  className="bg-[#3E2411] border border-[#545748] text-[#DB9F75] text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-[#DB9F75]"
                 >
                   <option value="">All Categories</option>
                   <option value="secrets">Secrets</option>
@@ -602,7 +602,7 @@ export default function ScanPage() {
                       setCategoryFilter('');
                       setSearchQuery('');
                     }}
-                    className="px-2.5 py-1.5 text-xs text-gray-400 hover:text-gray-200 bg-gray-800 hover:bg-gray-750 rounded-lg transition-colors"
+                    className="px-2.5 py-1.5 text-xs text-[#545748] hover:text-[#DB9F75] bg-[#3E2411] hover:bg-[#804012] rounded-lg transition-colors"
                   >
                     Reset
                   </button>
@@ -614,7 +614,7 @@ export default function ScanPage() {
             {isLoadingFindings ? (
               <div className="py-12 text-center">
                 <LoadingSpinner size="md" />
-                <p className="mt-3 text-xs text-gray-400">Filtering findings...</p>
+                <p className="mt-3 text-xs text-[#545748]">Filtering findings...</p>
               </div>
             ) : findings.length > 0 ? (
               <div className="space-y-3">
@@ -627,23 +627,23 @@ export default function ScanPage() {
                 ))}
               </div>
             ) : totalFindingsCount === 0 ? (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
-                <ShieldCheck className="h-16 w-16 text-emerald-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-100">Clean Bill of Health!</h3>
-                <p className="text-sm text-gray-400 mt-2 max-w-md mx-auto">
+              <div className="bg-[#122372] border border-[#545748] rounded-xl p-12 text-center shadow-lg">
+                <ShieldCheck className="h-16 w-16 text-[#DB9F75] mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-[#DB9F75]">Clean Bill of Health!</h3>
+                <p className="text-sm text-[#545748] mt-2 max-w-md mx-auto">
                   No security vulnerabilities or weaknesses were detected across scanned files.
                 </p>
                 <div className="mt-6">
                   <Link
                     to="/scan/new"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-400 text-gray-950 hover:bg-emerald-300 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-[#DB9F75] text-[#122372] hover:bg-[#804012] hover:text-[#DB9F75] border border-[#DB9F75] transition-colors shadow-md"
                   >
                     Scan Another Repository
                   </Link>
                 </div>
               </div>
             ) : (
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
+              <div className="bg-[#122372] border border-[#545748] rounded-xl p-8 shadow-md">
                 <EmptyState
                   title="No findings match your filters"
                   description="Try adjusting your severity filter, category filter, or search query."
@@ -654,7 +654,7 @@ export default function ScanPage() {
                         setCategoryFilter('');
                         setSearchQuery('');
                       }}
-                      className="mt-4 px-4 py-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 transition-colors"
+                      className="mt-4 px-4 py-2 text-xs font-semibold text-[#DB9F75] bg-[#3E2411] border border-[#545748] hover:bg-[#804012] rounded-lg transition-colors"
                     >
                       Clear Filters
                     </button>
