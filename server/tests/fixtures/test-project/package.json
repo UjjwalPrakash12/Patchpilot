@@ -1,0 +1,19 @@
+{
+  "name": "vulnerable-demo-app",
+  "version": "1.0.0",
+  "description": "Intentionally vulnerable sample application for PatchPilot testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "0.20.0",
+    "cors": "2.8.5",
+    "express": "4.16.0",
+    "jsonwebtoken": "8.5.1",
+    "lodash": "4.17.15",
+    "minimist": "1.2.0",
+    "shelljs": "0.8.3",
+    "unpinned-pkg": "*"
+  }
+}
